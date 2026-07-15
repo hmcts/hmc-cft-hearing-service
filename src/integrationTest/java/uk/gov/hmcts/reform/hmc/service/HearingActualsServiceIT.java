@@ -69,7 +69,7 @@ class HearingActualsServiceIT extends BaseTest {
     private static final String DELETE_HEARING_DATA_SCRIPT = "classpath:sql/delete-hearing-tables.sql";
     private static final String HEARING_ACTUALS_DATA_SCRIPT = "classpath:sql/insert-actualhearings.sql";
 
-    private String clientS2SToken = "client-token";
+    private static final String CLIENT_S2S_TOKEN = "client-token";
 
     private final HearingActualsService hearingActualsService;
     @Inject
@@ -105,7 +105,7 @@ class HearingActualsServiceIT extends BaseTest {
                 assertThrows(
                     BadRequestException.class,
                     () -> hearingActualsService.updateHearingActuals(
-                        hearingId, clientS2SToken,
+                        hearingId, CLIENT_S2S_TOKEN,
                         request
                     )
                 );
@@ -134,7 +134,7 @@ class HearingActualsServiceIT extends BaseTest {
             BadRequestException exception =
                 assertThrows(
                     BadRequestException.class,
-                    () -> hearingActualsService.updateHearingActuals(hearingId, clientS2SToken, request)
+                    () -> hearingActualsService.updateHearingActuals(hearingId, CLIENT_S2S_TOKEN, request)
                 );
             assertEquals(NO_PREVIOUS_HEARING_ACTUALS_RECORDED, exception.getMessage());
         }
@@ -151,7 +151,7 @@ class HearingActualsServiceIT extends BaseTest {
             BadRequestException exception =
                 assertThrows(
                     BadRequestException.class,
-                    () -> hearingActualsService.updateHearingActuals(hearingId, clientS2SToken, request)
+                    () -> hearingActualsService.updateHearingActuals(hearingId, CLIENT_S2S_TOKEN, request)
                 );
             assertEquals(HEARING_ACTUALS_HEARING_DAYS_INVALID, exception.getMessage());
         }
@@ -174,7 +174,7 @@ class HearingActualsServiceIT extends BaseTest {
             BadRequestException exception =
                 assertThrows(
                     BadRequestException.class,
-                    () -> hearingActualsService.updateHearingActuals(hearingId, clientS2SToken, request)
+                    () -> hearingActualsService.updateHearingActuals(hearingId, CLIENT_S2S_TOKEN, request)
                 );
             assertEquals(HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS, exception.getMessage());
         }
@@ -192,10 +192,10 @@ class HearingActualsServiceIT extends BaseTest {
             Long hearingId = 2000000010L;
             String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload1.json");
             HearingActual request = objectMapper.readValue(json, HearingActual.class);
-            hearingActualsService.updateHearingActuals(hearingId, clientS2SToken, request);
+            hearingActualsService.updateHearingActuals(hearingId, CLIENT_S2S_TOKEN, request);
             Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
-            HearingEntity hearingEntity = hearingEntityOptional.get();
             assertTrue(hearingEntityOptional.isPresent());
+            HearingEntity hearingEntity = hearingEntityOptional.get();
             assertEquals(LISTED.name(), hearingEntity.getStatus());
             validateActualHearings(hearingEntity, request);
             validatePutHearingActualsAuditInfo(hearingId, LISTED.name());
@@ -212,10 +212,10 @@ class HearingActualsServiceIT extends BaseTest {
             String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload1.json");
             HearingActual request = objectMapper.readValue(json, HearingActual.class);
             request.getHearingOutcome().setHearingResult(postHearingEventStatus);
-            hearingActualsService.updateHearingActuals(hearingId, clientS2SToken, request);
+            hearingActualsService.updateHearingActuals(hearingId, CLIENT_S2S_TOKEN, request);
             Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
-            HearingEntity hearingEntity = hearingEntityOptional.get();
             assertTrue(hearingEntityOptional.isPresent());
+            HearingEntity hearingEntity = hearingEntityOptional.get();
             assertEquals(postHearingEventStatus, hearingEntity.getStatus());
             validateActualHearings(hearingEntity, request);
             validateActualHearingAuditDetails(hearingEntity, request);
@@ -247,7 +247,7 @@ class HearingActualsServiceIT extends BaseTest {
             BadRequestException exception =
                 assertThrows(
                     BadRequestException.class,
-                    () -> hearingActualsService.updateHearingActuals(hearingId, clientS2SToken, request)
+                    () -> hearingActualsService.updateHearingActuals(hearingId, CLIENT_S2S_TOKEN, request)
             );
             assertEquals(HA_OUTCOME_RESULT_NOT_EMPTY, exception.getMessage());
             assertTrue(hearingStatusAuditRepository.findByHearingId(hearingId.toString()).isEmpty());
@@ -276,7 +276,7 @@ class HearingActualsServiceIT extends BaseTest {
             BadRequestException exception =
                 assertThrows(
                     BadRequestException.class,
-                    () -> hearingActualsService.updateHearingActuals(2000000010L, clientS2SToken, request)
+                    () -> hearingActualsService.updateHearingActuals(2000000010L, CLIENT_S2S_TOKEN, request)
                 );
             assertEquals(HA_OUTCOME_RESULT_NOT_EMPTY, exception.getMessage());
         }
@@ -290,7 +290,7 @@ class HearingActualsServiceIT extends BaseTest {
             BadRequestException exception =
                 assertThrows(
                     BadRequestException.class,
-                    () -> hearingActualsService.updateHearingActuals(2000000010L, clientS2SToken, request)
+                    () -> hearingActualsService.updateHearingActuals(2000000010L, CLIENT_S2S_TOKEN, request)
                 );
             assertEquals(HA_OUTCOME_RESULT_NOT_EMPTY, exception.getMessage());
         }
