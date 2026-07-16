@@ -226,10 +226,11 @@ sonarqube {
 ext {
   set('springCloudVersion', '2025.0.0')
   set('snakeyaml.version', '2.3')
-  set('jackson.version', '2.18.8')
+  set('jackson.version', '2.18.9')
   set('diuspactproviderVersion', '4.1.43')
-  set('log4j2.version', '2.25.4')
+  set('log4j2.version', '2.25.5')
   set('commons-lang3.version', '3.18.0')
+  set('tomcat.version', '10.1.57')
 
   junit                 = '5.13.4'
   junitPlatform         = '1.13.4'
@@ -382,7 +383,7 @@ dependencies {
   annotationProcessor group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: '0.2.0'
   annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstruct
   compileOnly group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '2.2.10'
-  runtimeOnly group: 'org.postgresql', name: 'postgresql', version: '42.7.11'
+  runtimeOnly group: 'org.postgresql', name: 'postgresql', version: '42.7.12'
 
 
   testImplementation libraries.junit5
