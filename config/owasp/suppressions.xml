@@ -24,6 +24,20 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
+    file name: log4j-api-2.25.4.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j-api@.*$</packageUrl>
+    <cve>CVE-2026-49844</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: log4j-to-slf4j-2.25.4.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j-to-slf4j@.*$</packageUrl>
+    <cve>CVE-2026-49844</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
     file name: tomcat-embed-core-10.1.55.jar
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-core@.*$</packageUrl>
@@ -33,6 +47,8 @@
     <cve>CVE-2026-55276</cve>
     <cve>CVE-2026-55955</cve>
     <cve>CVE-2026-55956</cve>
+    <cve>CVE-2026-59083</cve>
+    <cve>CVE-2026-59084</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
@@ -45,6 +61,8 @@
     <cve>CVE-2026-55276</cve>
     <cve>CVE-2026-55955</cve>
     <cve>CVE-2026-55956</cve>
+    <cve>CVE-2026-59083</cve>
+    <cve>CVE-2026-59084</cve>
   </suppress>
   <suppress>
     <cve>CVE-2026-54399</cve>
