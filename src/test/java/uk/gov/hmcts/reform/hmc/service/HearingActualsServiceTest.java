@@ -254,8 +254,7 @@ class HearingActualsServiceTest {
                                    hearingActualsService.updateHearingActuals(HEARING_ID, CLIENT_S2S_TOKEN, request));
             verify(hearingResponseEntity, never()).getActualHearingEntity();
             verify(hearingStatusAuditService).saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
-            verify(actualHearingAuditService, never()).mapActualHearingAuditDetails(any(), any());
-            verify(actualHearingAuditService, never()).saveActualHearingAuditDetails(any());
+            verify(actualHearingAuditService, never()).saveActualHearingAuditDetails(any(), any());
             verify(hearingCompletionService, never()).completeHearing(any(), any(), anyInt());
         }
 
@@ -266,12 +265,7 @@ class HearingActualsServiceTest {
             HearingActualsOutcome outcome = hearingActualsOutcome();
             request.setHearingOutcome(outcome);
 
-            ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
-            when(actualHearingEntity.getHearingResultType()).thenReturn(COMPLETED);
-            when(actualHearingEntity.getHearingResultDate())
-                .thenReturn(LocalDate.now().minusDays(13L));
-            when(actualHearingEntity.getActualHearingType()).thenReturn("Witness Hearing");
-            when(actualHearingEntity.getHearingResultReasonType()).thenReturn("MADE UP REASON");
+            ActualHearingEntity actualHearingEntity = getActualHearingEntity();
             HearingResponseEntity hearingResponseEntity = givenHearingWithStatus(hearingStatus);
             given(hearingResponseEntity.getActualHearingEntity()).willReturn(actualHearingEntity);
 
@@ -280,8 +274,7 @@ class HearingActualsServiceTest {
             verify(actualHearingRepository).save(any());
             verify(hearingStatusAuditService).saveAuditTriageDetailsWithUpdatedDateOrCurrentDate(any());
             verify(hearingCompletionService).completeHearing(any(), any(), anyInt());
-            verify(actualHearingAuditService).mapActualHearingAuditDetails(request, actualHearingEntity);
-            verify(actualHearingAuditService).saveActualHearingAuditDetails(any());
+            verify(actualHearingAuditService).saveActualHearingAuditDetails(request, actualHearingEntity);
         }
 
         @Test
@@ -301,8 +294,8 @@ class HearingActualsServiceTest {
 
             assertEquals(HEARING_ACTUALS_COMPLETION_FAILED, exception.getMessage());
             verify(actualHearingRepository).save(any());
+            verify(actualHearingAuditService).saveActualHearingAuditDetails(any(), any());
             verifyNoInteractions(hearingStatusAuditService);
-            verifyNoInteractions(actualHearingAuditService);
             verifyNoInteractions(hearingCompletionService);
         }
 
@@ -313,7 +306,7 @@ class HearingActualsServiceTest {
             outcome.setHearingResult(null);
             request.setHearingOutcome(outcome);
 
-            ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
+            ActualHearingEntity actualHearingEntity = getActualHearingEntity();
             HearingResponseEntity hearingResponseEntity = givenHearingWithStatus(HearingStatus.COMPLETED);
             given(hearingResponseEntity.getActualHearingEntity()).willReturn(actualHearingEntity);
 
@@ -611,6 +604,16 @@ class HearingActualsServiceTest {
             ActualHearingEntity actualHearingMock = mock(ActualHearingEntity.class);
             given(actualHearingRepository.save(any())).willReturn(actualHearingMock);
         }
+    }
+
+    private static ActualHearingEntity getActualHearingEntity() {
+        ActualHearingEntity actualHearingEntity = mock(ActualHearingEntity.class);
+        when(actualHearingEntity.getHearingResultType()).thenReturn(COMPLETED);
+        when(actualHearingEntity.getHearingResultDate())
+            .thenReturn(LocalDate.now().minusDays(13L));
+        when(actualHearingEntity.getActualHearingType()).thenReturn("Witness Hearing");
+        when(actualHearingEntity.getHearingResultReasonType()).thenReturn("MADE UP REASON");
+        return actualHearingEntity;
     }
 
     private HearingEntity createHearingEntity(String validHearingStaus) {

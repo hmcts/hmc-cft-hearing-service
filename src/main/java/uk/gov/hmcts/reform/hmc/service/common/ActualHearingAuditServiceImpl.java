@@ -24,14 +24,14 @@ public class ActualHearingAuditServiceImpl implements ActualHearingAuditService 
     }
 
     @Override
-    public void saveActualHearingAuditDetails(ActualHearingAuditEntity actualHearingAuditEntity) {
+    public void saveActualHearingAuditDetails(HearingActual request, ActualHearingEntity actualHearingEntity) {
 
-        actualHearingAuditRepository.save(actualHearingAuditEntity);
+        ActualHearingAuditEntity entity = mapActualHearingAuditDetails(request, actualHearingEntity);
+        saveActualHearingAudit(entity);
 
     }
 
-    @Override
-    public ActualHearingAuditEntity mapActualHearingAuditDetails(HearingActual request,
+    private ActualHearingAuditEntity mapActualHearingAuditDetails(HearingActual request,
                                                                   ActualHearingEntity actualHearingEntity) {
         ActualHearingAuditEntity actualHearingAuditEntity = new ActualHearingAuditEntity();
         HearingResponseEntity hearingResponseEntity = actualHearingEntity.getHearingResponse();
@@ -40,6 +40,10 @@ public class ActualHearingAuditServiceImpl implements ActualHearingAuditService 
         actualHearingAuditEntity.setActualHearingAuditRecord(objectMapper.convertValue(request, JsonNode.class));
         actualHearingAuditEntity.setAuditCreateDateTime(LocalDateTime.now());
         return actualHearingAuditEntity;
+    }
+
+    private void saveActualHearingAudit(ActualHearingAuditEntity actualHearingAuditEntity) {
+        actualHearingAuditRepository.save(actualHearingAuditEntity);
     }
 
 }

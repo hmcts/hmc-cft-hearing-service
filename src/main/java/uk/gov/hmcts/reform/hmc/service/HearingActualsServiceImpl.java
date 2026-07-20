@@ -6,7 +6,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.hmc.data.ActualHearingAuditEntity;
 import uk.gov.hmcts.reform.hmc.data.ActualHearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingResponseEntity;
@@ -98,52 +97,32 @@ public class HearingActualsServiceImpl implements HearingActualsService {
             return;
         }
 
-        completeHearingForFinalStatus(hearingId, clientS2SToken, request, latestHearingResponse,
-                                      hearing, hearingStatus);
+        completeHearingForFinalStatus(hearingId, clientS2SToken, request, latestHearingResponse, hearing);
     }
 
     private void completeHearingForFinalStatus(Long hearingId, String clientS2SToken, HearingActual request,
-                                      HearingResponseEntity latestHearingResponse, HearingEntity hearing,
-                                      HearingStatus hearingStatus) {
+                                      HearingResponseEntity latestHearingResponse, HearingEntity hearing) {
         try {
             ActualHearingEntity actualHearingEntity = getActualHearingEntity(latestHearingResponse);
-
+            actualHearingAuditService.saveActualHearingAuditDetails(request, actualHearingEntity);
             upsertNewHearingActuals(latestHearingResponse, request, clientS2SToken, hearing);
 
-            ActualHearingAuditEntity actualHearingAuditEntity = actualHearingAuditService
-                .mapActualHearingAuditDetails(request, actualHearingEntity);
-
-            String hearingResult = validateAndGetHearingResult(request.getHearingOutcome(), hearingStatus);
             hearingActualsValidator.validateActualHearingEntity(actualHearingEntity);
-            HearingEntity hearingEntity = updateStatus(hearingId, hearingResult);
+            HearingEntity hearingEntity = updateHearingStatus(hearingId, request.getHearingOutcome());
             hearingCompletionService.completeHearing(hearingEntity, clientS2SToken, hearing.getLatestRequestVersion());
-            actualHearingAuditService.saveActualHearingAuditDetails(actualHearingAuditEntity);
         } catch (DataAccessException ex) {
             log.error("Database failure completing final-status hearing actuals for hearing {}", hearingId, ex);
             throw new BadRequestException(HEARING_ACTUALS_COMPLETION_FAILED);
         }
     }
 
-    private static String validateAndGetHearingResult(HearingActualsOutcome hearingOutcome,
-                                                      HearingStatus hearingStatus) {
+    private HearingEntity updateHearingStatus(Long hearingId, HearingActualsOutcome hearingOutcome) {
         if (hearingOutcome == null || hearingOutcome.getHearingResult() == null) {
             throw new BadRequestException(INVALID_ACTUALS_POST_STATUS);
         }
-
-        String hearingResult = hearingOutcome.getHearingResult();
-        HearingStatus hearingResultStatus = HearingStatus.valueOf(hearingResult);
-
-        if (!HearingStatus.isFinalStatus(hearingStatus)
-            || !HearingStatus.isFinalStatus(hearingResultStatus)) {
-            throw new BadRequestException(INVALID_ACTUALS_POST_STATUS);
-        }
-        return hearingResult;
-    }
-
-    private HearingEntity updateStatus(Long hearingId, String hearingResult) {
         HearingEntity hearingEntity = hearingRepository.findById(hearingId)
             .orElseThrow(() -> new HearingNotFoundException(hearingId, HEARING_ID_NOT_FOUND));
-        hearingEntity.setStatus(hearingResult);
+        hearingEntity.setStatus(hearingOutcome.getHearingResult());
         hearingRepository.save(hearingEntity);
         return hearingEntity;
     }

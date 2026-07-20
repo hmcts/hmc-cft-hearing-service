@@ -50,33 +50,18 @@ class ActualHearingAuditServiceImplTest {
 
     @Test
     void saveActualHearingAuditDetails_passesExactEntityToRepository() {
-        ActualHearingAuditEntity entity = new ActualHearingAuditEntity();
-        entity.setHearingId(2000000001L);
-        entity.setHearingResponseId(5L);
+        HearingActual actual = TestingUtil.hearingActual();
+        ActualHearingEntity entity = getHearingResponseEntity().getActualHearingEntity();
+        actualHearingAuditService.saveActualHearingAuditDetails(actual,entity);
 
-        actualHearingAuditService.saveActualHearingAuditDetails(entity);
-
-        verify(actualHearingAuditRepository).save(entity);
         verify(actualHearingAuditRepository).save(actualHearingAuditEntityArgumentCaptor.capture());
         ActualHearingAuditEntity captured = actualHearingAuditEntityArgumentCaptor.getValue();
-        assertThat(captured.getHearingId(), is(2000000001L));
-        assertThat(captured.getHearingResponseId(), is(5L));
-    }
-
-    @Test
-    void mapActualHearingAuditDetails_setsHearingIdFromHearingResponse() {
-        HearingActual actual = TestingUtil.hearingActual();
-        HearingResponseEntity responseEntity = getHearingResponseEntity();
-
-        ActualHearingAuditEntity result =
-            actualHearingAuditService.mapActualHearingAuditDetails(actual, responseEntity.getActualHearingEntity());
-
-        assertThat(result.getHearingId(), is(2000000000L));
-        assertThat(result.getHearingResponseId(), is(2L));
-        assertNotNull(result.getActualHearingAuditRecord());
-        assertNotNull(result.getAuditCreateDateTime());
+        assertThat(captured.getHearingId(), is(2000000000L));
+        assertThat(captured.getHearingResponseId(), is(2L));
+        assertNotNull(captured.getActualHearingAuditRecord());
+        assertNotNull(captured.getAuditCreateDateTime());
         JsonNode expectedAuditRecord = objectMapper.valueToTree(actual);
-        assertThat(result.getActualHearingAuditRecord(), is(expectedAuditRecord));
+        assertThat(captured.getActualHearingAuditRecord(), is(expectedAuditRecord));
     }
 
     private HearingResponseEntity getHearingResponseEntity() {
