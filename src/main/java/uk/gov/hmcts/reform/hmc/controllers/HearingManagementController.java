@@ -12,6 +12,7 @@ import org.hibernate.validator.constraints.LuhnCheck;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -152,6 +153,7 @@ public class HearingManagementController {
      * @param status     optional Status
      * @return Hearing
      */
+    @Transactional
     @GetMapping(value = { "/hearings/{ccdCaseRef}" }, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get hearings")
@@ -218,6 +220,7 @@ public class HearingManagementController {
      * @return Hearing
      * @deprecated Use endpoint provided by getHearingsForListOfCasesPaginated() instead
      */
+    @Transactional
     @GetMapping(value = { "/hearings" }, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get hearings for list of cases")
