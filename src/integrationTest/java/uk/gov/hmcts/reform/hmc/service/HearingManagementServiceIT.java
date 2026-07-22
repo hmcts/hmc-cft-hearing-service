@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -421,7 +424,7 @@ class HearingManagementServiceIT extends BaseTest {
         validateRequestVersionAudit(response);
         assertEquals(2000000024L, response.getHearingRequestId());
         assertEquals(PutHearingStatus.UPDATE_REQUESTED.name(), response.getStatus());
-        assertEquals(2, response.getVersionNumber());
+        assertThat(response.getVersionNumber(), is(2));
         assertNotNull(response.getTimeStamp());
     }
 
@@ -434,7 +437,7 @@ class HearingManagementServiceIT extends BaseTest {
         request.getPartyDetails().get(1).setOrganisationDetails(TestingUtil.organisationDetails());
         Exception exception = assertThrows(BadRequestException.class, () ->
             hearingManagementService.updateHearingRequest(2000000024L, request, null, HMC));
-        assertEquals(MISSING_ORGANISATION_DETAILS, exception.getMessage());
+        assertThat(exception.getMessage(), is(MISSING_ORGANISATION_DETAILS));
     }
 
     @Test
@@ -446,19 +449,19 @@ class HearingManagementServiceIT extends BaseTest {
         request.getPartyDetails().get(1).setIndividualDetails(TestingUtil.individualDetails());
         Exception exception = assertThrows(BadRequestException.class, () ->
             hearingManagementService.updateHearingRequest(2000000024L, request, null, HMC));
-        assertEquals(INVALID_CASE_REFERENCE, exception.getMessage());
+        assertThat(exception.getMessage(), is(INVALID_CASE_REFERENCE));
     }
 
     @ParameterizedTest
     @MethodSource("hearingCompletionStatuses")
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_COMPLETION_DATA_SCRIPT})
     void testUpdateHearingCompletion_Statuses(Long hearingId, String expectedStatus) {
-        ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId, HMC);
+        ResponseEntity<?> responseEntity = hearingManagementService.hearingCompletion(hearingId, HMC);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
         assertTrue(hearingEntityOptional.isPresent(), "Hearing " + hearingId + " should be present");
         HearingEntity hearingEntity = hearingEntityOptional.get();
-        assertEquals(expectedStatus, hearingEntity.getStatus());
+        assertThat(hearingEntity.getStatus(), is(expectedStatus));
     }
 
     @ParameterizedTest
@@ -467,27 +470,59 @@ class HearingManagementServiceIT extends BaseTest {
     void shouldThrowErrorWhenHearingActualStatusIsNotValid(Long hearingId) {
         Exception exception = assertThrows(BadRequestException.class, () -> hearingManagementService
             .hearingCompletion(hearingId, HMC));
-        assertEquals(HEARING_ACTUALS_INVALID_STATUS, exception.getMessage());
+        assertThat(exception.getMessage(), is(HEARING_ACTUALS_INVALID_STATUS));
     }
 
     @ParameterizedTest
-    @MethodSource("validActualStatuses")
+    @MethodSource("finalStatus")
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_COMPLETION_DATA_SCRIPT})
-    void testUpdateHearingValid_Statuses(Long hearingId, String expectedStatus) {
-        ResponseEntity responseEntity = hearingManagementService.hearingCompletion(hearingId, HMC);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    void testUpdateHearingInFinalStatus(Long hearingId, String expectedStatus) {
+        ResponseEntity<?> responseEntity = hearingManagementService.hearingCompletion(hearingId, HMC);
+        assertNotNull(responseEntity, "hearingCompletion should return a response");
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
         Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
-        assertTrue(hearingEntityOptional.isPresent(), "Hearing " + hearingId + " should be present");
+        assertThat("Hearing " + hearingId + " should be present",
+                   hearingEntityOptional.isPresent(), is(true));
         HearingEntity hearingEntity = hearingEntityOptional.get();
-        assertEquals(expectedStatus, hearingEntity.getStatus());
+        assertThat(hearingEntity.getId(), is(hearingId));
+        assertThat(hearingEntity.getStatus(), is(expectedStatus));
+
+        List<HearingStatusAuditEntity> auditEntityList = hearingStatusAuditRepository.findByHearingId(
+            hearingId.toString());
+        assertNotNull(auditEntityList, "Audit list should not be null for hearing " + hearingId);
+        boolean hasCompletionAudit = auditEntityList.stream()
+            .anyMatch(audit -> POST_HEARING_ACTUALS_COMPLETION.equals(audit.getHearingEvent()));
+        assertFalse(hasCompletionAudit, "Audit should not be present for hearing " + hearingId);
+    }
+
+    @ParameterizedTest
+    @MethodSource("notFinalStatus")
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, HEARING_COMPLETION_DATA_SCRIPT})
+    void testUpdateHearingNotFinal_Status(Long hearingId, String expectedStatus) {
+        ResponseEntity<?> responseEntity = hearingManagementService.hearingCompletion(hearingId, HMC);
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+        Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
+        assertThat("Hearing " + hearingId + " should be present",
+                   hearingEntityOptional.isPresent(), is(true));
+        HearingEntity hearingEntity = hearingEntityOptional.get();
+        assertThat(hearingEntity.getStatus(), is(expectedStatus));
         List<HearingStatusAuditEntity> auditEntityList = hearingStatusAuditRepository.findByHearingId(
             hearingId.toString());
         Optional<HearingStatusAuditEntity> auditEntity = auditEntityList.stream()
             .filter(audit -> POST_HEARING_ACTUALS_COMPLETION.equals(audit.getHearingEvent()))
             .findFirst();
-        assertTrue(auditEntity.isPresent(), "Audit should be present for hearing " + hearingId);
-        assertNotNull(auditEntity.get().getOtherInfo(), "Audit otherInfo should not be null");
-        assertEquals("user@hmcts.net", auditEntity.get().getOtherInfo().get("userId").asText());
+        assertThat("Audit should be present for hearing " + hearingId,
+                   auditEntity.isPresent(), is(true));
+        assertThat("Audit otherInfo should not be null",
+                   auditEntity.get().getOtherInfo(), notNullValue());
+        assertThat(auditEntity.get().getOtherInfo().get("userId").asText(), is("user@hmcts.net"));
+    }
+
+    private static Stream<Arguments> notFinalStatus() {
+        return Stream.of(
+            arguments(2000000010L, ADJOURNED.name()),
+            arguments(2000000014L, CANCELLED.name())
+        );
     }
 
     private static Stream<Arguments> hearingCompletionStatuses() {
@@ -498,10 +533,11 @@ class HearingManagementServiceIT extends BaseTest {
         );
     }
 
-    private static Stream<Arguments> validActualStatuses() {
+    private static Stream<Arguments> finalStatus() {
         return Stream.of(
-            arguments(2000000010L, ADJOURNED.name()),
-            arguments(2000000000L, COMPLETED.name())
+            arguments(2000000016L, COMPLETED.name()),
+            arguments(2000000017L, ADJOURNED.name()),
+            arguments(2000000018L, CANCELLED.name())
         );
     }
 
