@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.hmc.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
@@ -56,6 +56,7 @@ import static uk.gov.hmcts.reform.hmc.utils.TestingUtil.CASE_REFERENCE;
 @ExtendWith(MockitoExtension.class)
 class HearingCompletionServiceTest {
 
+    @InjectMocks
     private HearingCompletionService hearingCompletionService;
 
     @Mock
@@ -84,16 +85,6 @@ class HearingCompletionServiceTest {
 
     private static final String CLIENT_S2S_TOKEN = "s2s_token";
     public static final String USER_ID = "userId";
-
-    @BeforeEach
-    void setUp() {
-        hearingCompletionService = new HearingCompletionService(hearingStatusAuditService,
-            messageSenderToTopicConfiguration,
-            objectMapperService,
-            hmiHearingResponseMapper,
-            securityUtils,
-            hearingRequestVersionAuditService);
-    }
 
     @ParameterizedTest(name = "[{index}] status={0}")
     @MethodSource("validFinalStatuses")

@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.hmc.service.common.HearingRequestVersionAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.HearingStatusAuditService;
 import uk.gov.hmcts.reform.hmc.service.common.ObjectMapperService;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -46,8 +47,13 @@ public class HearingCompletionService {
 
     @Transactional
     public void completeHearing(HearingEntity hearingEntity, String clientS2SToken, int existingRequestVersion) {
-        String userId = securityUtils.getUserInfo().getSub();
-        JsonNode otherInfo = objectMapperService.convertObjectToJsonNode(Map.of("userId", userId));
+        String userId = Optional.ofNullable(securityUtils.getUserInfo())
+            .map(u -> u.getSub()).orElse(null);
+        Map<String, String> otherInfoMap = new HashMap<>();
+        if (userId != null) {
+            otherInfoMap.put("userId", userId);
+        }
+        JsonNode otherInfo = objectMapperService.convertObjectToJsonNode(otherInfoMap);
 
         hearingRequestVersionAuditService.auditChangeInRequestVersion(hearingEntity, existingRequestVersion,
                                                                       clientS2SToken, true);

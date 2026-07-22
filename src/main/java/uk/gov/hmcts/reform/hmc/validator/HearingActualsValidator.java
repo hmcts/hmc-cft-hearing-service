@@ -18,6 +18,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.ADJOURNED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.CANCELLED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.COMPLETED;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.LISTED;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HA_OUTCOME_RESULT_NOT_EMPTY;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_HEARING_DAYS_INVALID;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS_MISSING_RESULT_TYPE;
@@ -27,10 +31,12 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.PUT_HEARING_ACT
 @Component
 public class HearingActualsValidator {
     private final HearingIdValidator hearingIdValidator;
-    private static final List<String> ALLOWED_ACTUALS_STATUSES = List.of("LISTED",  "COMPLETED",
-                                                                         "ADJOURNED","CANCELLED");
-    public static final List<String> HEARING_RESULTS_REASONS = List.of("ADJOURNED", "CANCELLED", "COMPLETED");
-    public static final List<String> HEARING_RESULTS_THAT_NEED_REASON_TYPE = List.of("ADJOURNED", "CANCELLED");
+    private static final List<String> ALLOWED_ACTUALS_STATUSES =
+        List.of(LISTED.toString(),  COMPLETED.toString(), ADJOURNED.toString(),CANCELLED.toString());
+    public static final List<String> HEARING_RESULTS_REASONS =
+        List.of(ADJOURNED.toString(), CANCELLED.toString(), COMPLETED.toString());
+    public static final List<String> HEARING_RESULTS_THAT_NEED_REASON_TYPE =
+        List.of(ADJOURNED.toString(),CANCELLED.toString());
 
     @Autowired
     public HearingActualsValidator(HearingIdValidator hearingIdValidator) {
