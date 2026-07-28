@@ -232,6 +232,7 @@ ext {
   set('commons-lang3.version', '3.18.0')
   set('tomcat.version', '10.1.57')
   set('httpcore5.version', '5.4.3')
+  set('netty.version', '4.1.136.Final')
 
   junit                 = '5.13.4'
   junitPlatform         = '1.13.4'
