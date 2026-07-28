@@ -3,13 +3,18 @@
   "role": {
     "name": "hmc-cft-hearing-service"
   },
+  "demo": {
+    "logging": {
+      "level": {
+        "root": "INFO",
+        "uk.gov.hmcts.reform.hmc": "DEBUG"
+      }
+    }
+  },
   "preview": {
     "instrumentation": {
       "springIntegration": {
         "enabled": true
-      },
-      "logging": {
-        "level": "DEBUG"
       }
     },
     "captureControllerSpans": true,
