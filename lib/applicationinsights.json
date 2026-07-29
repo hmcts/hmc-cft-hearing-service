@@ -3,6 +3,11 @@
   "role": {
     "name": "hmc-cft-hearing-service"
   },
+  "instrumentation": {
+    "logging": {
+      "level": "DEBUG"
+    }
+  },
   "demo": {
     "logging": {
       "level": {
