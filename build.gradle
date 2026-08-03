@@ -232,6 +232,7 @@ ext {
   set('commons-lang3.version', '3.18.0')
   set('tomcat.version', '10.1.57')
   set('httpcore5.version', '5.4.3')
+  set('netty.version', '4.1.136.Final')
 
   junit                 = '5.13.4'
   junitPlatform         = '1.13.4'
@@ -369,7 +370,7 @@ dependencies {
 
 
   implementation group: 'com.auth0', name: 'java-jwt', version: '4.5.2'
-  implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.17.18'
+  implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.17.19'
   implementation group: 'commons-io', name: 'commons-io', version: '2.22.0'
   implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: jjwt
   implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: jjwt

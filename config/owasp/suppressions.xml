@@ -22,4 +22,13 @@
     <cve>CVE-2026-54399</cve>
     <cve>CVE-2026-54428</cve>
   </suppress>
+  <suppress>
+    <cve>CVE-2026-33117</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: netty-transport-native-unix-common-4.1.136.Final.jar
+    ]]></notes>
+    <cve>CVE-2026-56816</cve>
+  </suppress>
 </suppressions>
