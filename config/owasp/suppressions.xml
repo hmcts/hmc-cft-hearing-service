@@ -27,8 +27,10 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
-    file name: netty-transport-native-unix-common-4.1.136.Final.jar
+    CVE-2026-56816 only affects io.netty:netty-codec-http3 before 4.2.16.Final.
+    Dependency Check incorrectly matches the Netty CPE against this unrelated 4.1 transport artifact.
     ]]></notes>
+    <packageUrl>pkg:maven/io.netty/netty-transport-native-unix-common@4.1.136.Final</packageUrl>
     <cve>CVE-2026-56816</cve>
   </suppress>
 </suppressions>
