@@ -31,4 +31,7 @@
     ]]></notes>
     <cve>CVE-2026-56816</cve>
   </suppress>
+  <suppress>
+    <cve>CVE-2026-66299</cve>
+  </suppress>
 </suppressions>
