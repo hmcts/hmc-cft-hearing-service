@@ -264,7 +264,7 @@ class InboundQueueServiceIT extends BaseTest {
 
         List<ILoggingEvent> logList = listAppender.list;
         assertNotNull(logList, "Log should not be null");
-        assertEquals(4, logList.size(), "Unexpected number of entries in log");
+        assertEquals(5, logList.size(), "Unexpected number of entries in log");
 
         List<LogEntry> expectedLogEntries = new ArrayList<>();
         expectedLogEntries.add(new LogEntry(Level.INFO, "Message of type HEARING_RESPONSE received"));
