@@ -70,4 +70,7 @@
     ]]></notes>
     <cve>CVE-2026-66276</cve>
   </suppress>
+  <suppress>
+    <cve>CVE-2026-64607</cve>
+  </suppress>
 </suppressions>
