@@ -73,4 +73,12 @@
   <suppress>
     <cve>CVE-2026-64607</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+    The fixed Angus Activation release is not currently available from the HMCTS Maven repository.
+    Track removal of this suppression when org.eclipse.angus:angus-activation:2.0.4 is available.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.eclipse\.angus/angus-activation@2\.0\.3$</packageUrl>
+    <cve>CVE-2025-7962</cve>
+  </suppress>
 </suppressions>
