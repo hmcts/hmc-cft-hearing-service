@@ -12,7 +12,6 @@ import org.hibernate.validator.constraints.LuhnCheck;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -88,8 +87,6 @@ public class HearingManagementController {
     public ResponseEntity<GetHearingResponse> getHearing(@RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
             @PathVariable("id") Long hearingId,
             @RequestParam(value = "isValid", defaultValue = "false") boolean isValid) {
-
-        log.debug("getHearing() called with request: {} and isValid: {}", hearingId, isValid);
         if (!isValid) {
             // Only verify access if the user is requesting more than just confirmation of a valid hearing id
             List<String> requiredRoles = new ArrayList<>();
@@ -123,7 +120,6 @@ public class HearingManagementController {
             @RequestHeader(value = HMCTS_DEPLOYMENT_ID, required = false) String deploymentId,
             @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
             @RequestBody @Valid HearingRequest createHearingRequest) {
-        log.debug("saveHearing() called with clientS2SToken: {}", clientS2SToken);
         verifyDeploymentIdEnabled(deploymentId);
         accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), List.of(HEARING_MANAGER), null);
         return hearingManagementService.saveHearingRequest(createHearingRequest, deploymentId,
@@ -140,7 +136,6 @@ public class HearingManagementController {
     public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
             @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
             @RequestBody @Valid DeleteHearingRequest deleteRequest) {
-        log.debug("deleteHearing() called with request: {}", hearingId);
         accessControlService.verifyHearingCaseAccess(hearingId, List.of(HEARING_MANAGER));
         return hearingManagementService.deleteHearingRequest(
                 hearingId, deleteRequest, getServiceName(clientS2SToken));
@@ -153,7 +148,6 @@ public class HearingManagementController {
      * @param status     optional Status
      * @return Hearing
      */
-    @Transactional
     @GetMapping(value = { "/hearings/{ccdCaseRef}" }, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get hearings")
@@ -170,7 +164,6 @@ public class HearingManagementController {
         @Size(min = 16, max = 16, message = ValidationError.CASE_REF_INVALID_LENGTH)
         @LuhnCheck(message = ValidationError.CASE_REF_INVALID, ignoreNonDigitCharacters = false) String ccdCaseRef,
         @RequestParam(required = false) String status) {
-        log.debug("getHearings() called with request: {} and status: {}", ccdCaseRef, status);
         return getHearingsResponse(ccdCaseRef, status, null);
     }
 
@@ -186,7 +179,6 @@ public class HearingManagementController {
         @RequestBody @Valid UpdateHearingRequest hearingRequest,
         @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
         @PathVariable("id") Long hearingId) {
-        log.debug("updateHearing() called with request: {}", hearingRequest.getCaseDetails().getCaseRef());
         verifyDeploymentIdEnabled(deploymentId);
         accessControlService.verifyHearingCaseAccess(hearingId, List.of(HEARING_MANAGER));
         return hearingManagementService.updateHearingRequest(hearingId, hearingRequest, deploymentId,
@@ -206,7 +198,6 @@ public class HearingManagementController {
 
     public ResponseEntity hearingCompletion(@PathVariable("id") Long hearingId,
             @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken) {
-        log.debug("hearingCompletion() called with request: {}", hearingId);
         accessControlService.verifyHearingCaseAccess(hearingId, List.of(HEARING_MANAGER));
         return hearingManagementService.hearingCompletion(hearingId, getServiceName(clientS2SToken));
     }
@@ -220,7 +211,6 @@ public class HearingManagementController {
      * @return Hearing
      * @deprecated Use endpoint provided by getHearingsForListOfCasesPaginated() instead
      */
-    @Transactional
     @GetMapping(value = { "/hearings" }, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get hearings for list of cases")
@@ -232,7 +222,6 @@ public class HearingManagementController {
     public List<GetHearingsResponse> getHearingsForListOfCases(@RequestParam @NotEmpty List<String> ccdCaseRefs,
                                                                @RequestParam(required = false) String status,
                                                                @RequestParam @NotBlank String caseTypeId) {
-        log.debug("getHearingsForListOfCases() called with status: {}", status);
         List<GetHearingsResponse> hearingsResponseList = new ArrayList<>();
         List<DataStoreCaseDetails> cases = hearingManagementService.getCaseSearchResults(ccdCaseRefs, status,
                                                                                           caseTypeId);
@@ -264,7 +253,6 @@ public class HearingManagementController {
         @RequestParam(required = false) String status,
         @RequestParam @NotBlank String caseTypeId,
         @RequestBody @Valid HearingsForListOfCasesPaginatedRequest hearingsForListOfCasesPaginatedRequest) {
-        log.debug("getHearingsForListOfCasesPaginated() called with status: {}, caseTypeId: {}", status, caseTypeId);
         List<GetHearingsResponse> hearingsResponseList = new ArrayList<>();
 
         List<String> caseReferences = getCaseReferences(hearingsForListOfCasesPaginatedRequest.getCaseReferences());
