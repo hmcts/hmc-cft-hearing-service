@@ -253,6 +253,9 @@ class InboundQueueServiceIT extends BaseTest {
         listAppender.start();
         logger.addAppender(listAppender);
 
+        final Level originalLogLevel = logger.getLevel();
+        logger.setLevel(Level.INFO);
+
         inboundQueueService.processMessage(message, serviceBusReceivedMessageContext);
 
         HearingEntity hearing = getHearing();
@@ -275,7 +278,9 @@ class InboundQueueServiceIT extends BaseTest {
 
         assertLogEntries(logList, expectedLogEntries);
 
-        logger.detachAndStopAllAppenders();
+        logger.detachAppender(listAppender);
+        logger.setLevel(originalLogLevel);
+        listAppender.stop();
 
         verify(serviceBusReceivedMessageContext).getMessage();
         verify(serviceBusReceivedMessage).getApplicationProperties();

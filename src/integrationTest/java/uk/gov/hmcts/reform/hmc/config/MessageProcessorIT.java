@@ -192,6 +192,9 @@ class MessageProcessorIT extends BaseTest {
         listAppender.start();
         logger.addAppender(listAppender);
 
+        final Level originalLogLevel = logger.getLevel();
+        logger.setLevel(Level.INFO);
+
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
 
         given(messageContext.getMessage()).willReturn(message);
@@ -201,6 +204,10 @@ class MessageProcessorIT extends BaseTest {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+
+        logger.detachAppender(listAppender);
+        logger.setLevel(originalLogLevel);
+        listAppender.stop();
 
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size());
