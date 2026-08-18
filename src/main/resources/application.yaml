@@ -188,8 +188,8 @@ supportTools:
 headerBased:
   allowed-override-hostpatterns: ${OVERRIDE_HOSTS:^https://[a-z0-9-]+-pr-\d+\.(preview|aat|demo)\.platform\.hmcts\.net(?::\d{1,5})?(?:/.*)?$}
 
-LOGGING:
-  LEVEL:
+logging:
+  level:
     uk:
       gov:
         hmcts:
