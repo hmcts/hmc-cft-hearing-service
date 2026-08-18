@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.config.UrlManager;
 import uk.gov.hmcts.reform.hmc.service.common.OverrideAuditService;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,6 +29,9 @@ class HeaderProcessorTest {
     private OverrideAuditService overrideAuditService;
 
     @Mock
+    private OverrideHostPolicy overrideHostPolicy;
+
+    @Mock
     private UrlManager roleAssignmentUrlManager;
 
     HeaderProcessor headerProcessor;
@@ -36,7 +40,7 @@ class HeaderProcessorTest {
     void setUp() {
         openMocks(this);
         headerProcessor = new HeaderProcessor(
-            params, roleAssignmentUrlManager, dataStoreUrlManager, overrideAuditService);
+            params, roleAssignmentUrlManager, dataStoreUrlManager, overrideAuditService, overrideHostPolicy);
     }
 
     @Test
@@ -44,14 +48,36 @@ class HeaderProcessorTest {
         when(params.isHmctsDeploymentIdEnabled()).thenReturn(true);
         when(dataStoreUrlManager.getUrlHeaderName()).thenReturn("dataStoreUrl");
         when(roleAssignmentUrlManager.getUrlHeaderName()).thenReturn("roleAssignmentUrl");
+        when(overrideHostPolicy.isAllowed(anyString())).thenReturn(true);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        String roleAssignmentUrlValue = "https://ccd-data-store-api-test-case-api-pr-XXX.preview.platform.hmcts.net";
+        String dataStoreUrlValue = "https://am-role-assignment-test-case-api-pr-XXX.preview.platform.hmcts.net";
+        request.addHeader("roleAssignmentUrl", roleAssignmentUrlValue);
+        request.addHeader("dataStoreUrl", dataStoreUrlValue);
+        headerProcessor.preHandle(request, null, null);
+        verify(roleAssignmentUrlManager).setActualHost(roleAssignmentUrlValue);
+        verify(dataStoreUrlManager).setActualHost(dataStoreUrlValue);
+    }
+
+    @Test
+    void preHandleShouldCallHandlers_OverrideHost_False() throws Exception {
+        when(params.isHmctsDeploymentIdEnabled()).thenReturn(true);
+        when(overrideHostPolicy.isAllowed(anyString())).thenReturn(false);
+        when(dataStoreUrlManager.getHost()).thenReturn("dataStoreHost");
+        when(roleAssignmentUrlManager.getHost()).thenReturn("roleAssignmentHost");
+        when(dataStoreUrlManager.getUrlHeaderName()).thenReturn("dataStoreUrl");
+        when(roleAssignmentUrlManager.getUrlHeaderName()).thenReturn("roleAssignmentUrl");
+
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("roleAssignmentUrl", "roleAssignmentUrlValue");
         request.addHeader("dataStoreUrl", "dataStoreUrlValue");
 
         headerProcessor.preHandle(request, null, null);
 
-        verify(roleAssignmentUrlManager, times(1)).setActualHost("roleAssignmentUrlValue");
-        verify(dataStoreUrlManager, times(1)).setActualHost("dataStoreUrlValue");
+        verify(dataStoreUrlManager).setActualHost("dataStoreHost");
+        verify(roleAssignmentUrlManager).setActualHost("roleAssignmentHost");
+        verify(roleAssignmentUrlManager, times(0)).setActualHost("roleAssignmentUrlValue");
+        verify(dataStoreUrlManager, times(0)).setActualHost("dataStoreUrlValue");
     }
 
     @Test
@@ -67,8 +93,8 @@ class HeaderProcessorTest {
 
         verify(roleAssignmentUrlManager, times(0)).setActualHost("roleAssignmentUrlValue");
         verify(dataStoreUrlManager, times(0)).setActualHost("dataStoreUrlValue");
-        verify(roleAssignmentUrlManager, times(1)).setActualHost("roleAssignmentDefaultHost");
-        verify(dataStoreUrlManager, times(1)).setActualHost("dataStoreDefaultHost");
+        verify(roleAssignmentUrlManager).setActualHost("roleAssignmentDefaultHost");
+        verify(dataStoreUrlManager).setActualHost("dataStoreDefaultHost");
     }
 
     @Test
@@ -83,11 +109,31 @@ class HeaderProcessorTest {
 
         headerProcessor.preHandle(request, null, null);
 
-        verify(roleAssignmentUrlManager, times(1)).getHost();
-        verify(dataStoreUrlManager, times(1)).getHost();
+        verify(roleAssignmentUrlManager).getHost();
+        verify(dataStoreUrlManager).getHost();
 
-        verify(roleAssignmentUrlManager, times(1)).setActualHost("http://example.org");
-        verify(dataStoreUrlManager, times(1)).setActualHost("http://example.org");
+        verify(roleAssignmentUrlManager).setActualHost("http://example.org");
+        verify(dataStoreUrlManager).setActualHost("http://example.org");
+    }
 
+    @Test
+    void preHandleShouldNotProcessHeaders_OverrideHostIsInvalid() throws Exception {
+        when(params.isHmctsDeploymentIdEnabled()).thenReturn(true);
+        when(overrideHostPolicy.isAllowed(anyString())).thenReturn(false);
+        when(dataStoreUrlManager.getUrlHeaderName()).thenReturn("dataStoreUrl");
+        when(roleAssignmentUrlManager.getUrlHeaderName()).thenReturn("roleAssignmentUrl");
+        when(roleAssignmentUrlManager.getHost()).thenReturn("http://example.org");
+        when(dataStoreUrlManager.getHost()).thenReturn("http://example.org");
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("roleAssignmentUrl", "roleAssignmentUrlValue");
+        request.addHeader("dataStoreUrl", "dataStoreUrlValue");
+
+        headerProcessor.preHandle(request, null, null);
+
+        verify(roleAssignmentUrlManager).getHost();
+        verify(dataStoreUrlManager).getHost();
+
+        verify(roleAssignmentUrlManager).setActualHost("http://example.org");
+        verify(dataStoreUrlManager).setActualHost("http://example.org");
     }
 }

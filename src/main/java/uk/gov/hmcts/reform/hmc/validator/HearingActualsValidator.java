@@ -27,9 +27,7 @@ import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HEARING_ACTUALS
 @Component
 public class HearingActualsValidator {
     private final HearingIdValidator hearingIdValidator;
-    private static final List<String> ALLOWED_ACTUALS_STATUSES = List.of("LISTED",
-            "UPDATE_REQUESTED",
-            "UPDATE_SUBMITTED");
+    private static final List<String> ALLOWED_ACTUALS_STATUSES = List.of("LISTED");
     public static final List<String> HEARING_RESULTS_REASONS = List.of("ADJOURNED", "CANCELLED", "COMPLETED");
     public static final List<String> HEARING_RESULTS_THAT_NEED_REASON_TYPE = List.of("ADJOURNED", "CANCELLED");
 
@@ -85,19 +83,18 @@ public class HearingActualsValidator {
 
     public void validateHearingActualDaysNotInTheFuture(HearingActual request) {
         List<ActualHearingDay> actualHearingDays = request.getActualHearingDays();
-        actualHearingDays.forEach(hearingDay -> {
-            if (hearingDay != null && hearingDay.getHearingDate().isAfter(LocalDate.now())) {
-                boolean isHearingDayEmpty = hearingDay.isEmpty();
-                if (Boolean.TRUE.equals(hearingDay.getNotRequired())) {
-                    if (!isHearingDayEmpty) {
-                        throw new BadRequestException(HEARING_ACTUALS_INVALID_STATUS);
-                    }
-                } else {
-                    throw new BadRequestException(HEARING_ACTUALS_INVALID_STATUS);
-                }
-
+        LocalDate today = LocalDate.now();
+        for (ActualHearingDay hearingDay : actualHearingDays) {
+            if (hearingDay == null) {
+                continue;
             }
-        });
+            LocalDate hearingDate = hearingDay.getHearingDate();
+            boolean isHearingDayEmpty = hearingDay.isEmpty();
+
+            if (hearingDate.isAfter(today) && !isHearingDayEmpty) {
+                throw new BadRequestException(HEARING_ACTUALS_INVALID_STATUS);
+            }
+        }
     }
 
     public void validateDuplicateHearingActualDays(List<ActualHearingDay> actualHearingDays) {

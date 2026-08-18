@@ -1,18 +1,17 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.LuhnCheck;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +28,7 @@ import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
 import uk.gov.hmcts.reform.hmc.data.SecurityUtils;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
+import uk.gov.hmcts.reform.hmc.exceptions.InvalidServiceAuthorizationException;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.DeleteHearingRequest;
 import uk.gov.hmcts.reform.hmc.model.GetHearingResponse;
@@ -47,15 +47,19 @@ import java.util.List;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID_MAX_SIZE;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.INBOUND_S2S_TOKEN;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.INVALID_SERVICE_AUTHORISATION_LOG_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_MAX_LENGTH;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.HMCTS_DEPLOYMENT_ID_NOT_REQUIRED;
+import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_SERVICE_EXCEPTION_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.LISTED_HEARING_VIEWER;
 
 @RestController
 @Validated
+@Slf4j
 public class HearingManagementController {
 
     private final HearingManagementService hearingManagementService;
@@ -78,19 +82,28 @@ public class HearingManagementController {
     @ApiResponse(responseCode = "204", description = "Hearing id is valid")
     @ApiResponse(responseCode = "404", description = ValidationError.HEARING_ID_NOT_FOUND)
     @ApiResponse(responseCode = "400", description = ValidationError.INVALID_HEARING_ID_DETAILS)
+    @ApiResponse(responseCode = "401", description = INVALID_SERVICE_EXCEPTION_MESSAGE)
 
-    public ResponseEntity<GetHearingResponse> getHearing(@PathVariable("id") Long hearingId,
+    public ResponseEntity<GetHearingResponse> getHearing(@RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
+            @PathVariable("id") Long hearingId,
             @RequestParam(value = "isValid", defaultValue = "false") boolean isValid) {
         if (!isValid) {
-            // Only verify access if the user is requesting more than just confirmation of a
-            // valid hearing id
+            // Only verify access if the user is requesting more than just confirmation of a valid hearing id
+            List<String> requiredRoles = new ArrayList<>();
+            requiredRoles.add(HEARING_VIEWER);
+
             String status = hearingManagementService.getStatus(hearingId);
-            List<String> requiredRoles = Lists.newArrayList(HEARING_VIEWER);
             if (HearingStatus.LISTED.name().equals(status)) {
                 requiredRoles.add(LISTED_HEARING_VIEWER);
             }
 
             accessControlService.verifyHearingCaseAccess(hearingId, requiredRoles);
+        } else {
+            String s2sToken = getServiceName(clientS2SToken);
+            if (!INBOUND_S2S_TOKEN.equals(s2sToken)) {
+                log.info(INVALID_SERVICE_AUTHORISATION_LOG_MESSAGE, hearingId, s2sToken);
+                throw new InvalidServiceAuthorizationException(INVALID_SERVICE_EXCEPTION_MESSAGE, s2sToken, hearingId);
+            }
         }
         return hearingManagementService.getHearingRequest(hearingId, isValid);
     }
@@ -108,8 +121,7 @@ public class HearingManagementController {
             @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
             @RequestBody @Valid HearingRequest createHearingRequest) {
         verifyDeploymentIdEnabled(deploymentId);
-        accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), Lists.newArrayList(HEARING_MANAGER),
-                                              null);
+        accessControlService.verifyCaseAccess(getCaseRef(createHearingRequest), List.of(HEARING_MANAGER), null);
         return hearingManagementService.saveHearingRequest(createHearingRequest, deploymentId,
                 getServiceName(clientS2SToken));
     }
@@ -124,7 +136,7 @@ public class HearingManagementController {
     public HearingResponse deleteHearing(@PathVariable("id") Long hearingId,
             @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
             @RequestBody @Valid DeleteHearingRequest deleteRequest) {
-        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
+        accessControlService.verifyHearingCaseAccess(hearingId, List.of(HEARING_MANAGER));
         return hearingManagementService.deleteHearingRequest(
                 hearingId, deleteRequest, getServiceName(clientS2SToken));
     }
@@ -136,7 +148,6 @@ public class HearingManagementController {
      * @param status     optional Status
      * @return Hearing
      */
-    @Transactional
     @GetMapping(value = { "/hearings/{ccdCaseRef}" }, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get hearings")
@@ -169,7 +180,7 @@ public class HearingManagementController {
         @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
         @PathVariable("id") Long hearingId) {
         verifyDeploymentIdEnabled(deploymentId);
-        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
+        accessControlService.verifyHearingCaseAccess(hearingId, List.of(HEARING_MANAGER));
         return hearingManagementService.updateHearingRequest(hearingId, hearingRequest, deploymentId,
                 getServiceName(clientS2SToken));
     }
@@ -187,7 +198,7 @@ public class HearingManagementController {
 
     public ResponseEntity hearingCompletion(@PathVariable("id") Long hearingId,
             @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken) {
-        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
+        accessControlService.verifyHearingCaseAccess(hearingId, List.of(HEARING_MANAGER));
         return hearingManagementService.hearingCompletion(hearingId, getServiceName(clientS2SToken));
     }
 
@@ -200,7 +211,6 @@ public class HearingManagementController {
      * @return Hearing
      * @deprecated Use endpoint provided by getHearingsForListOfCasesPaginated() instead
      */
-    @Transactional
     @GetMapping(value = { "/hearings" }, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get hearings for list of cases")
@@ -266,7 +276,7 @@ public class HearingManagementController {
 
     private GetHearingsResponse getHearingsResponse(String ccdCaseRef, String status,
             DataStoreCaseDetails caseDetails) {
-        List<String> filteredRoleAssignments = accessControlService.verifyCaseAccess(ccdCaseRef, Lists.newArrayList(
+        List<String> filteredRoleAssignments = accessControlService.verifyCaseAccess(ccdCaseRef, List.of(
                 HEARING_VIEWER,
                 LISTED_HEARING_VIEWER), caseDetails);
 

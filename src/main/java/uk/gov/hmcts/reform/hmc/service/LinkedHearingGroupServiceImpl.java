@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.hmc.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -229,7 +228,7 @@ public class LinkedHearingGroupServiceImpl implements LinkedHearingGroupService 
     public GetLinkedHearingGroupResponse getLinkedHearingGroupResponse(String requestId) {
         linkedHearingValidator.validateRequestId(requestId, INVALID_LINKED_GROUP_REQUEST_ID_DETAILS);
         List<HearingEntity> linkedGroupHearings = hearingRepository.findByRequestId(requestId);
-        verifyAccess(linkedGroupHearings, Lists.newArrayList(HEARING_VIEWER));
+        verifyAccess(linkedGroupHearings, List.of(HEARING_VIEWER));
         return getLinkedHearingGroupDetails(requestId);
     }
 

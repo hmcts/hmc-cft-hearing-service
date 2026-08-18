@@ -8,6 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -1135,6 +1137,61 @@ class LinkedHearingValidatorTest {
             linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
         );
         assertEquals("003 hearing request already in a group", exception.getMessage());
+    }
+
+    @Test
+    void validateHearingActualsStatus_unknownStatus() {
+        when(hearingRepository.getStatus(1L)).thenReturn("UNKNOWN_STATUS");
+
+        linkedHearingValidator.validateHearingActualsStatus(1L, "Error: Unknown status");
+
+        verify(hearingRepository).getStatus(1L);
+        verify(hearingRepository, never()).findById(1L);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = DeleteHearingStatus.class, names = {"HEARING_REQUESTED", "AWAITING_LISTING"})
+    void validateHearingActualsStatus_statusNotValidHearingActuals(DeleteHearingStatus deleteHearingStatus) {
+        when(hearingRepository.getStatus(1L)).thenReturn(deleteHearingStatus.name());
+        HearingEntity hearing =
+            generateHearingEntity(1L,
+                                  deleteHearingStatus.name(),
+                                  1,
+                                  false,
+                                  LocalDateTime.now(),
+                                  List.of(generateHearingDayDetailsEntity(1L, LocalDateTime.now().minusDays(1L))),
+                                  null);
+        when(hearingRepository.findById(1L)).thenReturn(Optional.of(hearing));
+
+        BadRequestException exception =
+            assertThrows(BadRequestException.class,
+                         () -> linkedHearingValidator.validateHearingActualsStatus(1L, "Error: Invalid status"),
+                         "BadRequestException should be thrown for an invalid delete status");
+
+        assertEquals("Error: Invalid status", exception.getMessage(), "Exception has unexpected message");
+
+        verify(hearingRepository).getStatus(1L);
+        verify(hearingRepository).findById(1L);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = DeleteHearingStatus.class, names = {"UPDATE_REQUESTED", "UPDATE_SUBMITTED", "LISTED"})
+    void validateHearingActualsStatus_statusValidHearingActuals(DeleteHearingStatus deleteHearingStatus) {
+        when(hearingRepository.getStatus(1L)).thenReturn(deleteHearingStatus.name());
+        HearingEntity hearing =
+            generateHearingEntity(1L,
+                                  deleteHearingStatus.name(),
+                                  1,
+                                  false,
+                                  LocalDateTime.now(),
+                                  List.of(generateHearingDayDetailsEntity(1L, LocalDateTime.now().minusDays(1L))),
+                                  null);
+        when(hearingRepository.findById(1L)).thenReturn(Optional.of(hearing));
+
+        linkedHearingValidator.validateHearingActualsStatus(1L, "No error expected");
+
+        verify(hearingRepository).getStatus(1L);
+        verify(hearingRepository).findById(1L);
     }
 
     private List<HearingEntity> generateLinkedHearingDetailsListWithBadStatus(LinkedGroupDetails groupDetails) {

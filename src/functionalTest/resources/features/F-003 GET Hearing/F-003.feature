@@ -21,9 +21,8 @@ Feature: F-003: Get hearing request
       When a request is prepared with appropriate values,
       And the request [uses the query param isValid=true],
       And it is submitted to call the [get hearing] operation of [HMC CFT Hearing Service],
-      Then a positive response is received,
-      And the response [has the 204 OK code],
-      And the response [has no payload],
+      Then a negative response is received,
+      And the response [has the 401 code],
       And the response has all other details as expected.
 
   @S-003.3
