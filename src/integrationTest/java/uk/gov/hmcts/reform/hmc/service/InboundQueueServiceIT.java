@@ -246,7 +246,7 @@ class InboundQueueServiceIT extends BaseTest {
                 "hearing": {
                 }
             }""";
-        JsonNode message = objectMapper.readTree(incompleteHearingResponse);
+        final JsonNode message = objectMapper.readTree(incompleteHearingResponse);
 
         Logger logger = (Logger) LoggerFactory.getLogger(InboundQueueServiceImpl.class);
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
