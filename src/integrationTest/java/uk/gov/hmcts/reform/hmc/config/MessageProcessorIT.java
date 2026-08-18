@@ -192,8 +192,7 @@ class MessageProcessorIT extends BaseTest {
         listAppender.start();
         logger.addAppender(listAppender);
 
-        final Level originalLogLevel = logger.getLevel();
-        logger.setLevel(Level.INFO);
+        final Level originalLogLevel = getLevel(logger);
 
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
 
@@ -205,9 +204,7 @@ class MessageProcessorIT extends BaseTest {
             throw new RuntimeException(e);
         }
 
-        logger.detachAppender(listAppender);
-        logger.setLevel(originalLogLevel);
-        listAppender.stop();
+        detachAppender(logger, listAppender, originalLogLevel);
 
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size());
@@ -228,6 +225,8 @@ class MessageProcessorIT extends BaseTest {
         listAppender.start();
         logger.addAppender(listAppender);
 
+        final Level originalLogLevel = getLevel(logger);
+
         Logger loggerMessageProcessor = (Logger) LoggerFactory.getLogger(MessageProcessor.class);
         ListAppender<ILoggingEvent> listAppenderMessageProcessor = new ListAppender<>();
         listAppenderMessageProcessor.start();
@@ -244,18 +243,20 @@ class MessageProcessorIT extends BaseTest {
         given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
         messageProcessor.processMessage(errorJsonNode, messageContext);
 
+        detachAppender(logger, listAppender, originalLogLevel);
+
         List<ILoggingEvent> logsList = listAppender.list;
-        assertEquals(5, logsList.size());
+        assertEquals(3, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
         assertEquals("Message of type " + MessageType.ERROR.name() + " received",
                      logsList.get(0).getFormattedMessage());
-        assertEquals(Level.INFO, logsList.get(3).getLevel());
-        assertEquals(Level.ERROR, logsList.get(4).getLevel());
+        assertEquals(Level.INFO, logsList.get(1).getLevel());
+        assertEquals(Level.ERROR, logsList.get(2).getLevel());
         assertEquals(
             "Hearing id: 2000000000 with Case reference: 9372710950276233 , Service Code: "
                 + "TEST and Error Description: unable to create case updated to status "
                 + HearingStatus.EXCEPTION.name(),
-            logsList.get(4).getFormattedMessage()
+            logsList.get(2).getFormattedMessage()
         );
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         logsListMessageProcessor.forEach(System.out::print);
@@ -281,6 +282,8 @@ class MessageProcessorIT extends BaseTest {
         listAppender.start();
         logger.addAppender(listAppender);
 
+        final Level originalLogLevel = getLevel(logger);
+
         Logger loggerMessageProcessor = (Logger) LoggerFactory.getLogger(MessageProcessor.class);
         ListAppender<ILoggingEvent> listAppenderMessageProcessor = new ListAppender<>();
         listAppenderMessageProcessor.start();
@@ -296,20 +299,22 @@ class MessageProcessorIT extends BaseTest {
             throw new RuntimeException(e);
         }
 
+        detachAppender(logger, listAppender, originalLogLevel);
+
         List<ILoggingEvent> logsList = listAppender.list;
-        assertEquals(5, logsList.size());
+        assertEquals(3, logsList.size());
         assertEquals(Level.INFO, logsList.get(0).getLevel());
-        assertEquals(Level.ERROR, logsList.get(3).getLevel());
-        assertEquals(Level.ERROR, logsList.get(4).getLevel());
+        assertEquals(Level.ERROR, logsList.get(1).getLevel());
+        assertEquals(Level.ERROR, logsList.get(2).getLevel());
         assertEquals("Message of type " + MessageType.HEARING_RESPONSE.name() + " received",
                      logsList.get(0).getFormattedMessage());
         assertEquals("Error processing message with Hearing id 2000000000 exception was "
                          + "Cannot find request version 10 for hearing 2000000000",
-                     logsList.get(3).getFormattedMessage());
+                     logsList.get(1).getFormattedMessage());
         assertEquals(
             "Hearing id: 2000000000 with Case reference: 9372710950276233 , Service Code: TEST "
                 + "and Error Description: Cannot find request version 10 for hearing 2000000000"
-                + " updated to status " + HearingStatus.EXCEPTION.name(), logsList.get(4).getFormattedMessage());
+                + " updated to status " + HearingStatus.EXCEPTION.name(), logsList.get(2).getFormattedMessage());
 
         List<ILoggingEvent> logsListMessageProcessor = listAppenderMessageProcessor.list;
         assertEquals(2, logsListMessageProcessor.size());
@@ -566,5 +571,18 @@ class MessageProcessorIT extends BaseTest {
                         .toList();
 
         assertTrue(hearingSessionStartAndEndTimes.containsAll(expectedPairs));
+    }
+
+    private static Level getLevel(Logger logger) {
+        final Level originalLogLevel = logger.getLevel();
+        logger.setLevel(Level.INFO);
+        return originalLogLevel;
+    }
+
+    private static void detachAppender(Logger logger, ListAppender<ILoggingEvent> listAppender,
+                                       Level originalLogLevel) {
+        logger.detachAppender(listAppender);
+        logger.setLevel(originalLogLevel);
+        listAppender.stop();
     }
 }
