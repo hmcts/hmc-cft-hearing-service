@@ -73,7 +73,4 @@
   <suppress>
     <cve>CVE-2026-64607</cve>
   </suppress>
-  <suppress>
-    <cve>CVE-2025-7962</cve>
-  </suppress>
 </suppressions>
