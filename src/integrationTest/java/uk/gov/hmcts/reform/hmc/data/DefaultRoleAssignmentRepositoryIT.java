@@ -26,6 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpHeaders.ETAG;
 import static org.springframework.http.HttpHeaders.IF_NONE_MATCH;
 
@@ -56,6 +57,8 @@ class DefaultRoleAssignmentRepositoryIT extends BaseTest {
     private static final String AUTHORISATIONS_AUTH_1 = "auth1";
     private static final String AUTHORISATIONS_AUTH_2 = "auth2";
     private static final String POST_CODE = "EC12 3LN";
+    private static final String ENFORCEMENT_ROLE_CATEGORY = RoleCategory.ENFORCEMENT.name();
+    private static final String ENFORCEMENT_ROLE_NAME = "Bailiff";
 
     @Nested
     @DisplayName("getRoleAssignments()")
@@ -67,7 +70,7 @@ class DefaultRoleAssignmentRepositoryIT extends BaseTest {
             WireMock.stubFor(WireMock.get(urlMatching("/am/role-assignments/actors/" + ACTOR_ID))
                         .willReturn(okJson(jsonBody(ID))));
 
-            validateRoleAssignments(ID);
+            validateRoleAssignments(ID, ROLE_CATEGORY, ROLE_NAME);
         }
 
         @DisplayName("should GET roleAssignments from cache when ETag found")
@@ -90,8 +93,8 @@ class DefaultRoleAssignmentRepositoryIT extends BaseTest {
                                         .withStatus(304)
                                         .withHeader(ETAG, "\"W/123456789\"")));
 
-            validateRoleAssignments(ID);
-            validateRoleAssignments(ID);
+            validateRoleAssignments(ID, ROLE_CATEGORY, ROLE_NAME);
+            validateRoleAssignments(ID, ROLE_CATEGORY, ROLE_NAME);
         }
 
         @DisplayName("should update the cache when ETag differs from the one from the response")
@@ -122,9 +125,9 @@ class DefaultRoleAssignmentRepositoryIT extends BaseTest {
                         .withHeader(IF_NONE_MATCH, equalTo("\"W/663456789\""))
                         .willReturn(aResponse().withStatus(304)));
 
-            validateRoleAssignments(ID);
-            validateRoleAssignments(ID1);
-            validateRoleAssignments(ID1);
+            validateRoleAssignments(ID, ROLE_CATEGORY, ROLE_NAME);
+            validateRoleAssignments(ID1, ROLE_CATEGORY, ROLE_NAME);
+            validateRoleAssignments(ID1, ROLE_CATEGORY, ROLE_NAME);
         }
 
         @DisplayName("should not populate cache when we receive empty roleAssignments")
@@ -188,31 +191,49 @@ class DefaultRoleAssignmentRepositoryIT extends BaseTest {
             WireMock.stubFor(WireMock.get(urlMatching("/am/role-assignments/actors/" + ACTOR_ID))
                         .willReturn(okJson(jsonBodyUnknownFields(ID))));
 
-            validateRoleAssignments(ID);
+            validateRoleAssignments(ID, ROLE_CATEGORY, ROLE_NAME);
         }
 
-        private void validateRoleAssignments(String id) {
+        @DisplayName("should return Enforcement roleAssignments")
+        @Test
+        void shouldReturnRoleAssignmentsForEnforcementRoleCategory() {
+            WireMock.stubFor(WireMock.get(urlMatching("/am/role-assignments/actors/" + ACTOR_ID))
+                                 .willReturn(okJson(jsonBodyUnknownFields(ID))));
+
+            validateRoleAssignments(ID, ENFORCEMENT_ROLE_CATEGORY, ENFORCEMENT_ROLE_NAME);
+        }
+
+        private void validateRoleAssignments(String id, String roleCategory, String roleName) {
             RoleAssignmentResponse roleAssignments = roleAssignmentRepository.getRoleAssignments(ACTOR_ID);
 
             assertThat(roleAssignments.getRoleAssignments().size(), is(1));
-            RoleAssignmentResource roleAssignmentResource = roleAssignments.getRoleAssignments().get(0);
+            RoleAssignmentResource roleAssignmentResource = roleAssignments.getRoleAssignments().getFirst();
             assertThat(roleAssignmentResource.getId(), is(id));
             assertThat(roleAssignmentResource.getActorIdType(), is(ACTOR_ID_TYPE));
             assertThat(roleAssignmentResource.getActorId(), is(ACTOR_ID));
             assertThat(roleAssignmentResource.getRoleType(), is(ROLE_TYPE));
-            assertThat(roleAssignmentResource.getRoleName(), is(ROLE_NAME));
+            assertThat(roleAssignmentResource.getRoleName(), is(roleName));
             assertThat(roleAssignmentResource.getClassification(), is(CLASSIFICATION));
             assertThat(roleAssignmentResource.getGrantType(), is(GRANT_TYPE));
-            assertThat(roleAssignmentResource.getRoleCategory(), is(ROLE_CATEGORY));
+            assertThat(roleAssignmentResource.getRoleCategory(), is(roleCategory));
             assertThat(roleAssignmentResource.getReadOnly(), is(READ_ONLY));
             assertThat(roleAssignmentResource.getBeginTime(), is(EXPECTED_BEGIN_TIME));
             assertThat(roleAssignmentResource.getEndTime(), is(EXPECTED_END_TIME));
             assertThat(roleAssignmentResource.getCreated(), is(EXPECTED_CREATED));
 
+            assertTrue(roleAssignmentResource.getAttributes().getContractType().isPresent());
             assertThat(roleAssignmentResource.getAttributes().getContractType().get(), is(ATTRIBUTES_CONTRACT_TYPE));
+
+            assertTrue(roleAssignmentResource.getAttributes().getJurisdiction().isPresent());
             assertThat(roleAssignmentResource.getAttributes().getJurisdiction().get(), is(ATTRIBUTES_JURISDICTION));
+
+            assertTrue(roleAssignmentResource.getAttributes().getCaseId().isPresent());
             assertThat(roleAssignmentResource.getAttributes().getCaseId().get(), is(ATTRIBUTES_CASE_ID));
+
+            assertTrue(roleAssignmentResource.getAttributes().getLocation().isPresent());
             assertThat(roleAssignmentResource.getAttributes().getLocation().get(), is(ATTRIBUTES_LOCATION));
+
+            assertTrue(roleAssignmentResource.getAttributes().getRegion().isPresent());
             assertThat(roleAssignmentResource.getAttributes().getRegion().get(), is(ATTRIBUTES_REGION));
 
             assertThat(roleAssignmentResource.getAuthorisations().size(), is(2));
