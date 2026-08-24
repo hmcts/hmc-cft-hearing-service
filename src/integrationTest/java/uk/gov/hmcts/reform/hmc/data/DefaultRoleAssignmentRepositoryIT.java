@@ -189,7 +189,7 @@ class DefaultRoleAssignmentRepositoryIT extends BaseTest {
         @Test
         void shouldReturnRoleAssignmentsWhenUnknownFieldsOnRequest() {
             WireMock.stubFor(WireMock.get(urlMatching("/am/role-assignments/actors/" + ACTOR_ID))
-                        .willReturn(okJson(jsonBodyUnknownFields(ID))));
+                        .willReturn(okJson(jsonBodyUnknownFields(ID, ROLE_CATEGORY, ROLE_NAME))));
 
             validateRoleAssignments(ID, ROLE_CATEGORY, ROLE_NAME);
         }
@@ -198,7 +198,8 @@ class DefaultRoleAssignmentRepositoryIT extends BaseTest {
         @Test
         void shouldReturnRoleAssignmentsForEnforcementRoleCategory() {
             WireMock.stubFor(WireMock.get(urlMatching("/am/role-assignments/actors/" + ACTOR_ID))
-                                 .willReturn(okJson(jsonBodyUnknownFields(ID))));
+                                 .willReturn(okJson(jsonBodyUnknownFields(ID, ENFORCEMENT_ROLE_CATEGORY,
+                                                                          ENFORCEMENT_ROLE_NAME))));
 
             validateRoleAssignments(ID, ENFORCEMENT_ROLE_CATEGORY, ENFORCEMENT_ROLE_NAME);
         }
@@ -278,7 +279,7 @@ class DefaultRoleAssignmentRepositoryIT extends BaseTest {
             + "}";
     }
 
-    private static String jsonBodyUnknownFields(String id) {
+    private static String jsonBodyUnknownFields(String id, String roleCategory, String roleName) {
         return "{\n"
             + "  \"roleAssignmentResponse\": [\n"
             + "    {\n"
@@ -286,10 +287,10 @@ class DefaultRoleAssignmentRepositoryIT extends BaseTest {
             + "      \"actorIdType\": \"" + ACTOR_ID_TYPE + "\",\n"
             + "      \"actorId\": \"" + ACTOR_ID + "\",\n"
             + "      \"roleType\": \"" + ROLE_TYPE + "\",\n"
-            + "      \"roleName\": \"" + ROLE_NAME + "\",\n"
+            + "      \"roleName\": \"" + roleName + "\",\n"
             + "      \"classification\": \"" + CLASSIFICATION + "\",\n"
             + "      \"grantType\": \"" + GRANT_TYPE + "\",\n"
-            + "      \"roleCategory\": \"" + ROLE_CATEGORY + "\",\n"
+            + "      \"roleCategory\": \"" + roleCategory + "\",\n"
             + "      \"readOnly\": " + READ_ONLY + ",\n"
             + "      \"beginTime\": \"" + BEGIN_TIME + "\",\n"
             + "      \"endTime\": \"" + END_TIME + "\",\n"
