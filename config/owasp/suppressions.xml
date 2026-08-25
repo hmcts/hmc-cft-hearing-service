@@ -23,11 +23,54 @@
     <cve>CVE-2026-54428</cve>
   </suppress>
   <suppress>
+    <cve>CVE-2026-33117</cve>
+  </suppress>
+  <suppress>
     <notes><![CDATA[
-    See https://tools.hmcts.net/jira/browse/HMAN-1159
+    file name: netty-transport-native-unix-common-4.1.136.Final.jar
     ]]></notes>
-    <cve>CVE-2026-55833</cve>
-    <cve>CVE-2026-44891</cve>
-    <cve>CVE-2026-55831</cve>
+    <cve>CVE-2026-56816</cve>
+  </suppress>
+  <suppress>
+    <cve>CVE-2026-66299</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: proton-j-0.34.1.jar
+    ]]></notes>
+    <cve>CVE-2026-66257</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: proton-j-0.34.1.jar
+    ]]></notes>
+    <cve>CVE-2026-66273</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: proton-j-0.34.1.jar
+    ]]></notes>
+    <cve>CVE-2026-66274</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: proton-j-0.34.1.jar
+    ]]></notes>
+    <cve>CVE-2026-66277</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: proton-j-0.34.1.jar
+    ]]></notes>
+    <cve>CVE-2026-66275</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: proton-j-0.34.1.jar
+    ]]></notes>
+    <cve>CVE-2026-66276</cve>
+  </suppress>
+  <suppress>
+    <cve>CVE-2026-64607</cve>
   </suppress>
 </suppressions>
