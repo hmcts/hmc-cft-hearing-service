@@ -5,7 +5,7 @@
   },
   "instrumentation": {
     "logging": {
-      "level": "INFO"
+      "level": "DEBUG"
     }
   },
   "preview": {
