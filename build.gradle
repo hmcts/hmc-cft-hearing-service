@@ -230,7 +230,7 @@ ext {
   set('diuspactproviderVersion', '4.1.43')
   set('log4j2.version', '2.25.5')
   set('commons-lang3.version', '3.18.0')
-  set('tomcat.version', '10.1.57')
+  set('tomcat.version', '10.1.59')
   set('httpcore5.version', '5.4.3')
   set('netty.version', '4.1.136.Final')
 
@@ -369,7 +369,7 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '8.0.0'
 
 
-  implementation group: 'com.auth0', name: 'java-jwt', version: '4.5.2'
+  implementation group: 'com.auth0', name: 'java-jwt', version: '4.6.0'
   implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.17.19'
   implementation group: 'commons-io', name: 'commons-io', version: '2.22.0'
   implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: jjwt
@@ -386,7 +386,7 @@ dependencies {
   annotationProcessor group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: '0.2.0'
   annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstruct
   compileOnly group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '2.2.10'
-  runtimeOnly group: 'org.postgresql', name: 'postgresql', version: '42.7.12'
+  runtimeOnly group: 'org.postgresql', name: 'postgresql', version: '42.7.13'
 
 
   testImplementation libraries.junit5
