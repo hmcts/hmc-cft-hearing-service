@@ -164,7 +164,6 @@ withNightlyPipeline(type, product, component) {
       }
     }
   }
-
 }
 
 // env variables needed for BEFTA.
