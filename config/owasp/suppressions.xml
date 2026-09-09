@@ -80,10 +80,6 @@
   </suppress>
   
   <suppress>
-      <cve>CVE-2026-59270</cve>
-  </suppress>
-  
-  <suppress>
       <cve>CVE-2026-59280</cve>
   </suppress>
   

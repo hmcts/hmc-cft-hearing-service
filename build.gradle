@@ -337,6 +337,9 @@ dependencies {
   // put CVE Vulnerability (sub)dependency overrides here e.g.
   // implementation group: 'com.example', name: 'example-lib', version: '1.0.0' //  parent dependency name
 
+  // Fix CVE-2026-59270; Spring Boot 3.5.15 manages Spring Security 6.5.11
+  implementation platform('org.springframework.security:spring-security-bom:6.5.12')
+
   // Capped at 6.5.X due to issues with integration tests on 6.6.X
   // persistent instance references an unsaved transient instance
   // @ LinkHearingGroupControllerIT > DeleteLinkedHearingGroup > shouldReturn200_WhenHearingGroupExists()
