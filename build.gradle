@@ -226,7 +226,6 @@ sonarqube {
 ext {
   set('springCloudVersion', '2025.0.0')
   set('snakeyaml.version', '2.3')
-  set('jackson.version', '2.18.9')
   set('diuspactproviderVersion', '4.1.43')
   set('log4j2.version', '2.25.5')
   set('commons-lang3.version', '3.18.0')
@@ -348,7 +347,7 @@ dependencies {
 
   // Spring Dependencies
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aspectj'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
