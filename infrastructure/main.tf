@@ -102,19 +102,20 @@ data "azuread_service_principal" "jenkins_ptl" {
 }
 
 module "postgresql_v15_replica" {
-  source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=DTSPO-30107-additional-postgres-admins"
   count  = var.enable_replica ? 1 : 0
   providers = {
     azurerm.postgres_network = azurerm.postgres_network
   }
 
-  subnet_suffix        = "expanded"
-  admin_user_object_id = data.azuread_service_principal.jenkins_ptl.object_id
-  business_area        = "cft"
-  common_tags          = var.common_tags
-  component            = var.component
-  env                  = var.env
-  pgsql_databases      = [{ name = var.database_name }]
+  subnet_suffix                 = "expanded"
+  admin_user_object_id          = data.azuread_service_principal.jenkins_ptl.object_id
+  preserve_legacy_jenkins_admin = false
+  business_area                 = "cft"
+  common_tags                   = var.common_tags
+  component                     = var.component
+  env                           = var.env
+  pgsql_databases               = [{ name = var.database_name }]
   pgsql_server_configuration = [
     {
       name  = "azure.extensions"
