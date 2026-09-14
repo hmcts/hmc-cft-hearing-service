@@ -100,10 +100,6 @@
   </suppress>
   
   <suppress>
-      <cve>CVE-2026-62380</cve>
-  </suppress>
-  
-  <suppress>
     <cve>CVE-2026-47834</cve>
   </suppress>
   <suppress>
