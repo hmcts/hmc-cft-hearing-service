@@ -39,7 +39,10 @@ import static org.mockito.Mockito.verify;
 @PactBroker(scheme = "${PACT_BROKER_SCHEME:http}",
     host = "${PACT_BROKER_URL:localhost}",
     port = "${PACT_BROKER_PORT:}",
-    consumerVersionSelectors = {@VersionSelector(tag = "master")})
+    consumers = {BasePactTesting.CONSUMER_NAME},
+    consumerVersionSelectors = {
+        @VersionSelector(tag = "master", consumer = BasePactTesting.CONSUMER_NAME)
+    })
 @IgnoreNoPactsToVerify
 public class HearingManagementGetHearingsProviderTest extends BasePactTesting {
 
