@@ -4,7 +4,7 @@ plugins {
   id 'application'
   id 'idea'
   id 'jacoco'
-  id 'au.com.dius.pact' version '4.6.20'
+  id 'au.com.dius.pact' version '4.6.17'
   id 'com.github.ben-manes.versions' version '0.51.0'
   id 'com.github.hmcts.rse-cft-lib' version '0.19.1828'
   id 'com.github.spacialcircumstances.gradle-cucumber-reporting' version '0.1.25'
@@ -227,7 +227,7 @@ ext {
   set('springCloudVersion', '2025.0.0')
   set('snakeyaml.version', '2.3')
   set('jackson.version', '2.18.9')
-  set('diuspactproviderVersion', '4.1.43')
+  set('diuspactproviderVersion', '4.6.17')
   set('log4j2.version', '2.25.5')
   set('commons-lang3.version', '3.18.0')
   set('tomcat.version', '10.1.59')
@@ -398,7 +398,6 @@ dependencies {
 
   contractTestImplementation sourceSets.main.runtimeClasspath
   contractTestImplementation sourceSets.test.runtimeClasspath
-  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'java8', version: diuspactproviderVersion
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: diuspactproviderVersion
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: diuspactproviderVersion
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: diuspactproviderVersion
