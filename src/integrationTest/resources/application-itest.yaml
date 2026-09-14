@@ -24,7 +24,7 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: http://localhost:${wiremock.server.port:5000}/o
+            issuer-uri: http://localhost:${wiremock.server.port:9002}/o
 ccd:
   data-store:
     url-header-name: ${CCD_DATA_STORE_URL_HEADER_NAME:Data-Store-Url}
@@ -38,9 +38,9 @@ role:
 
 idam:
   api:
-    url: http://localhost:${wiremock.server.port:5000}
+    url: http://localhost:${wiremock.server.port:9002}
   s2s-auth:
-    url: http://localhost:${wiremock.server.port:5000}/s2s
+    url: http://localhost:${wiremock.server.port:9002}/s2s
 
 fh:
   ad:
