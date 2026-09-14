@@ -65,7 +65,7 @@ import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_V
     consumerVersionSelectors = {@VersionSelector(tag = "master", consumer = "civil_service")}
 )
 @IgnoreNoPactsToVerify
-class CivilServiceProviderContractTest {
+class HearingManagementProviderContractTest {
 
     private static final long HEARING_ID = 2000000000000000L;
     private static final String CASE_REFERENCE = "1671000000000018";
