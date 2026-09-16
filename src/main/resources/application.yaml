@@ -51,7 +51,7 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: ${IDAM_OIDC_URL:http://localhost:9002}/o
+            issuer-uri: ${IDAM_OIDC_URL:http:idam.api.url}/o
         registration:
           oidc:
             client-id: internal
@@ -124,7 +124,10 @@ role:
 
 idam:
   api:
-    url: ${IDAM_HMCTS_ACCESS_URL:http://localhost:9002}
+    url: ${IDAM_API_URL:http://localhost:9002}
+  oidc:
+    url: ${IDAM_OIDC_URL:http://localhost:9002}/o
+    use_oidc_api: true
   s2s-auth:
     microservice: hmc_cft_hearing_service
     totp_secret: ${IDAM_KEY_CFT_HEARING_SERVICE:AAAAAAAAAAAAAAAA}

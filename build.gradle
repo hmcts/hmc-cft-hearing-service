@@ -365,7 +365,7 @@ dependencies {
 
   // HMCTS libraries
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.5'
-  implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.5'
+  implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.1.0'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '8.0.0'
 
 
@@ -390,7 +390,7 @@ dependencies {
 
 
   testImplementation libraries.junit5
-  testImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '9.2.7_CCD-7454-SNAPSHOT1'
+  testImplementation group: 'com.github.hmcts', name: 'befta-fw', version: '9.2.11'
   testImplementation group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.26.12'
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all'
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
