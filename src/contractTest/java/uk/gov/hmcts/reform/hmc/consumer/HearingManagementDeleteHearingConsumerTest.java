@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.hmc.utility.HearingResponsePactUtil;
 
 import java.util.Map;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 @ExtendWith(PactConsumerTestExt.class)
 @PactTestFor(pactVersion = PactSpecVersion.V3)
 public class HearingManagementDeleteHearingConsumerTest extends BasePactTesting {
@@ -60,7 +62,7 @@ public class HearingManagementDeleteHearingConsumerTest extends BasePactTesting 
             .path(PATH_HEARING)
             .query(FIELD_HEARING_ID + "=" + TEST_HEARING_ID)
             .method(HttpMethod.DELETE.toString())
-            .body(jsonValidRequest, "application/json")
+            .body(jsonValidRequest, APPLICATION_JSON_VALUE)
             .headers(headers)
             .willRespondWith()
             .status(HttpStatus.OK.value())
@@ -82,7 +84,7 @@ public class HearingManagementDeleteHearingConsumerTest extends BasePactTesting 
             .path(PATH_HEARING)
             .query(FIELD_HEARING_ID + "=" + TEST_HEARING_ID)
             .method(HttpMethod.DELETE.toString())
-            .body(jsonInvalidRequest, "application/json")
+            .body(jsonInvalidRequest, APPLICATION_JSON_VALUE)
             .headers(headers)
             .willRespondWith()
             .status(HttpStatus.BAD_REQUEST.value())
