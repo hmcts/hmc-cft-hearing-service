@@ -146,15 +146,15 @@ public final class ValidationError {
 
     public static final String HEARING_ACTUALS_ID_NOT_FOUND = "001 No such id: %s";
     public static final String HEARING_ACTUALS_INVALID_STATUS = "002 invalid status %s";
-    public static final String HEARING_ACTUALS_HEARING_DAYS_INVALID = "003 invalid date";
-    public static final String HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS = "004 non-unique dates";
+    public static final String HEARING_ACTUALS_HEARING_DAYS_INVALID = "003 invalid date. ActualHearingDay in the "
+                                                        + "request fall outside the allowable range";
+    public static final String HEARING_ACTUALS_NON_UNIQUE_HEARING_DAYS = "004 non-unique dates. ActualHearingDay(s) "
+                                                         + "in the request is not unique";
     public static final String HEARING_ACTUALS_MISSING_RESULT_TYPE = "%s result requires a hearingResultReasonType";
     public static final String HEARING_ACTUALS_MISSING_HEARING_OUTCOME = "005 missing hearing outcome";
-    public static final String HEARING_ACTUALS_MISSING_HEARING_DAY = "003 missing hearing day actuals";
     public static final String HEARING_ACTUALS_UN_EXPECTED = "004 unexpected hearing day actuals";
     public static final String HEARING_ACTUALS_NO_HEARING_RESPONSE_FOUND = "No response found on the hearing %s";
 
-    public static final String HA_OUTCOME_DETAIlS_NOT_VALID = "hearingOutcome details not valid";
     public static final String HA_OUTCOME_TYPE_NOT_EMPTY = "hearingType cannot be null or empty";
     public static final String HA_OUTCOME_TYPE_MAX_LENGTH = "Hearing type must not be more than 40 " + CHARACTERS_LONG;
     public static final String HA_OUTCOME_FINAL_FLAG_NOT_EMPTY = "hearingFinalFlag has to be provided";
@@ -311,4 +311,9 @@ public final class ValidationError {
     public static final String CASE_REFERENCES_MANDATORY = "At least one case reference must be provided";
     public static final String INVALID_SERVICE_EXCEPTION_MESSAGE = "Failed to invoke ‘getHearing’ "
         + "from service: %s for hearing id: %s";
+    public static final String PUT_HEARING_ACTUALS_INVALID_STATUS = "002 invalid status for awaiting actuals "
+        + "to be accepted %s";
+    public static final String NO_PREVIOUS_HEARING_ACTUALS_RECORDED = "003 no previous hearing actuals recorded";
+    public static final String INVALID_ACTUALS_POST_STATUS = "002 invalid status for amending actuals post final state";
+    public static final String HEARING_ACTUALS_COMPLETION_FAILED = "002 Could not complete Hearing Actuals";
 }
