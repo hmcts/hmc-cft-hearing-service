@@ -154,4 +154,8 @@
   <suppress>
       <cve>CVE-2026-47889</cve>
   </suppress>
+
+  <suppress>
+      <cve>CVE-2026-89044</cve>
+  </suppress>
 </suppressions>
