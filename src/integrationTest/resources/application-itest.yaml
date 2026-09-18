@@ -39,6 +39,8 @@ role:
 idam:
   api:
     url: http://localhost:${wiremock.server.port:9002}
+  oidc:
+    url: http://localhost:${wiremock.server.port:9002}
   s2s-auth:
     url: http://localhost:${wiremock.server.port:9002}/s2s
 
