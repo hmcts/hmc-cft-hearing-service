@@ -51,7 +51,7 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: ${IDAM_OIDC_URL:http:idam.api.url}/o
+            issuer-uri: ${IDAM_OIDC_URL:idam.api.url}/o
         registration:
           oidc:
             client-id: internal
@@ -124,7 +124,7 @@ role:
 
 idam:
   api:
-    url: ${IDAM_API_URL:http://localhost:9002}
+    url: ${IDAM_API_URL:http://localhost:5000}
   oidc:
     url: ${IDAM_OIDC_URL:http://localhost:9002}/o
     use_oidc_api: true
