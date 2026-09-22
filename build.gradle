@@ -225,6 +225,7 @@ sonarqube {
 
 ext {
   set('springCloudVersion', '2025.0.0')
+  set('spring-framework.version', '6.2.20')
   set('snakeyaml.version', '2.3')
   set('jackson.version', '2.18.9')
   set('diuspactproviderVersion', '4.1.43')
@@ -344,6 +345,7 @@ dependencies {
 
   implementation group: 'commons-fileupload', name:'commons-fileupload', version:'1.6.0'
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
+  implementation group: 'org.apache.qpid', name: 'proton-j', version: '0.35.0'
   // end::CVE Vulnerability dependency overrides
 
   // Spring Dependencies
