@@ -11,7 +11,7 @@ plugins {
   id 'io.spring.dependency-management' version '1.1.7'
   id 'org.owasp.dependencycheck' version '12.2.2'
   id 'org.sonarqube' version '6.2.0.5505'
-  id 'org.springframework.boot' version '3.5.15'
+  id 'org.springframework.boot' version '3.5.16'
   id 'uk.gov.hmcts.java' version '0.12.70'
 }
 
@@ -232,7 +232,7 @@ ext {
   set('commons-lang3.version', '3.18.0')
   set('tomcat.version', '10.1.59')
   set('httpcore5.version', '5.4.3')
-  set('netty.version', '4.1.136.Final')
+  set('netty.version', '4.1.137.Final')
 
   junit                 = '5.13.4'
   junitPlatform         = '1.13.4'
@@ -340,7 +340,7 @@ dependencies {
   // Capped at 6.5.X due to issues with integration tests on 6.6.X
   // persistent instance references an unsaved transient instance
   // @ LinkHearingGroupControllerIT > DeleteLinkedHearingGroup > shouldReturn200_WhenHearingGroupExists()
-  implementation group: 'org.hibernate.orm', name: 'hibernate-core', version: '6.6.54.Final'                   // spring-boot-starter-data-jpa
+  implementation group: 'org.hibernate.orm', name: 'hibernate-core', version: '6.6.58.Final'                   // spring-boot-starter-data-jpa
 
   implementation group: 'commons-fileupload', name:'commons-fileupload', version:'1.6.0'
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
@@ -370,7 +370,7 @@ dependencies {
 
 
   implementation group: 'com.auth0', name: 'java-jwt', version: '4.6.0'
-  implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.17.19'
+  implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.17.20'
   implementation group: 'commons-io', name: 'commons-io', version: '2.22.0'
   implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: jjwt
   implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: jjwt
