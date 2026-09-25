@@ -3,12 +3,12 @@ appVersion: "1.0"
 description: A Helm chart for hmc-cft-hearing-service App
 name: hmc-cft-hearing-service
 home: https://github.com/hmcts/hmc-cft-hearing-service
-version: 1.6.27
+version: 1.6.28
 maintainers:
   - name: HMCTS CCD Dev Team
 dependencies:
   - name: java
-    version: 5.3.0
+    version: 5.3.2
     repository: 'oci://hmctsprod.azurecr.io/helm'
   - name: servicebus
     version: 1.2.1
