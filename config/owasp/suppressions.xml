@@ -32,9 +32,6 @@
     <cve>CVE-2026-56816</cve>
   </suppress>
   <suppress>
-    <cve>CVE-2026-66299</cve>
-  </suppress>
-  <suppress>
     <notes><![CDATA[
     file name: proton-j-0.34.1.jar
     ]]></notes>
@@ -71,6 +68,101 @@
     <cve>CVE-2026-66276</cve>
   </suppress>
   <suppress>
-    <cve>CVE-2026-64607</cve>
+    <cve>CVE-2026-47892</cve>
+  </suppress>
+  
+  <suppress>
+      <cve>CVE-2026-47893</cve>
+  </suppress>
+  
+  <suppress>
+      <cve>CVE-2026-59270</cve>
+  </suppress>
+  
+  <suppress>
+      <cve>CVE-2026-59280</cve>
+  </suppress>
+  
+  <suppress>
+      <cve>CVE-2026-59283</cve>
+  </suppress>
+  
+  <suppress>
+      <cve>CVE-2026-59313</cve>
+  </suppress>
+  
+  <suppress>
+      <cve>CVE-2026-59314</cve>
+  </suppress>
+  
+  <suppress>
+    <cve>CVE-2026-47834</cve>
+  </suppress>
+  <suppress>
+      <cve>CVE-2026-47841</cve>
+  </suppress>
+  <suppress>
+      <cve>CVE-2026-47842</cve>
+  </suppress>
+  <suppress>
+      <cve>CVE-2026-47874</cve>
+  </suppress>
+  <suppress>
+      <cve>CVE-2026-47890</cve>
+  </suppress>
+  <suppress>
+      <cve>CVE-2026-47891</cve>
+  </suppress>
+  <suppress>
+      <cve>CVE-2026-59276</cve>
+  </suppress>
+  <suppress>
+      <cve>CVE-2026-59281</cve>
+  </suppress>
+  <suppress>
+      <cve>CVE-2026-59282</cve>
+  </suppress>
+
+  <suppress>
+    <cve>CVE-2026-47883</cve>
+  </suppress>
+  
+  <suppress>
+      <cve>CVE-2026-47884</cve>
+  </suppress>
+  
+  <suppress>
+      <cve>CVE-2026-47885</cve>
+  </suppress>
+  
+  <suppress>
+      <cve>CVE-2026-47886</cve>
+  </suppress>
+  
+  <suppress>
+      <cve>CVE-2026-47887</cve>
+  </suppress>
+  
+  <suppress>
+      <cve>CVE-2026-47888</cve>
+  </suppress>
+  
+  <suppress>
+      <cve>CVE-2026-47889</cve>
+  </suppress>
+
+  <suppress>
+      <cve>CVE-2026-89044</cve>
+  </suppress>
+  
+   <suppress>
+      <cve>CVE-2026-41707</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
+    file name: angus-activation-2.0.3.jar
+    ]]></notes>
+    <cve>CVE-2025-7962</cve>
   </suppress>
 </suppressions>
