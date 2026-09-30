@@ -1,0 +1,3 @@
+ALTER TABLE public.pending_requests
+  ADD COLUMN IF NOT EXISTS claimed_at TIMESTAMP WITHOUT TIME ZONE,
+  ADD COLUMN IF NOT EXISTS claim_token UUID;
