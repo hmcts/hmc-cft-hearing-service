@@ -246,12 +246,15 @@ class InboundQueueServiceIT extends BaseTest {
                 "hearing": {
                 }
             }""";
-        JsonNode message = objectMapper.readTree(incompleteHearingResponse);
+        final JsonNode message = objectMapper.readTree(incompleteHearingResponse);
 
         Logger logger = (Logger) LoggerFactory.getLogger(InboundQueueServiceImpl.class);
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
         listAppender.start();
         logger.addAppender(listAppender);
+
+        final Level originalLogLevel = logger.getLevel();
+        logger.setLevel(Level.INFO);
 
         inboundQueueService.processMessage(message, serviceBusReceivedMessageContext);
 
@@ -275,7 +278,9 @@ class InboundQueueServiceIT extends BaseTest {
 
         assertLogEntries(logList, expectedLogEntries);
 
-        logger.detachAndStopAllAppenders();
+        logger.detachAppender(listAppender);
+        logger.setLevel(originalLogLevel);
+        listAppender.stop();
 
         verify(serviceBusReceivedMessageContext).getMessage();
         verify(serviceBusReceivedMessage).getApplicationProperties();

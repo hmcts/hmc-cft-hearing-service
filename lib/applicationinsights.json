@@ -2,7 +2,12 @@
   "connectionString": "${file:/mnt/secrets/hmc/app-insights-connection-string}",
   "role": {
     "name": "hmc-cft-hearing-service"
-  }, 
+  },
+  "instrumentation": {
+    "logging": {
+      "level": "DEBUG"
+    }
+  },
   "preview": {
     "instrumentation": {
       "springIntegration": {
