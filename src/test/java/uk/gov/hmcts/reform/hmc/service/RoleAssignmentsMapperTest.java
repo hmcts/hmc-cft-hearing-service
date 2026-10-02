@@ -40,6 +40,8 @@ class RoleAssignmentsMapperTest {
     public static final String CASE_ID2 = "caseId2";
     public static final String ASSIGNMENT_1 = "assignment1";
     public static final String ASSIGNMENT_2 = "assignment2";
+    public static final String CASE_ID3 = "caseId3";
+    public static final String ASSIGNMENT_3 = "assignment3";
     private static final Instant BEGIN_TIME = Instant.parse("2015-10-21T13:32:21.123Z");
     private static final Instant END_TIME = Instant.parse("2215-11-04T14:43:22.456Z");
     private static final Instant CREATED = Instant.parse("2020-12-04T15:54:23.789Z");
@@ -59,8 +61,9 @@ class RoleAssignmentsMapperTest {
         void shouldMapToRoleAssignments() {
             RoleAssignmentResource roleAssignment1 = createRoleAssignmentRecord(ASSIGNMENT_1, CASE_ID1);
             RoleAssignmentResource roleAssignment2 = createRoleAssignmentRecord(ASSIGNMENT_2, CASE_ID2);
+            RoleAssignmentResource roleAssignment3 = createRoleAssignmentEnforcementRecord(ASSIGNMENT_3, CASE_ID3);
             RoleAssignmentRequestResponse response = createRoleAssignmentRequestResponse(asList(
-                roleAssignment1, roleAssignment2
+                roleAssignment1, roleAssignment2, roleAssignment3
             ));
 
             RoleAssignments mapped = instance.toRoleAssignments(response);
@@ -68,10 +71,11 @@ class RoleAssignmentsMapperTest {
             List<RoleAssignment> roleAssignments = mapped.getRoleAssignments();
 
             assertAll(
-                () -> assertThat(roleAssignments.size(), is(2)),
+                () -> assertThat(roleAssignments.size(), is(3)),
 
                 () -> assertThat(roleAssignments.get(0), matchesRoleAssignmentResource(roleAssignment1)),
-                () -> assertThat(roleAssignments.get(1), matchesRoleAssignmentResource(roleAssignment2))
+                () -> assertThat(roleAssignments.get(1), matchesRoleAssignmentResource(roleAssignment2)),
+                () -> assertThat(roleAssignments.get(2), matchesRoleAssignmentResource(roleAssignment3))
             );
 
         }
@@ -118,6 +122,7 @@ class RoleAssignmentsMapperTest {
         }
     }
 
+
     @Nested
     @DisplayName("toRoleAssignments(RoleAssignmentResponse)")
     class ToRoleAssignmentsFromRoleAssignmentResponse {
@@ -126,8 +131,9 @@ class RoleAssignmentsMapperTest {
         void shouldMapToRoleAssignments() {
             RoleAssignmentResource roleAssignment1 = createRoleAssignmentRecord(ASSIGNMENT_1, CASE_ID1);
             RoleAssignmentResource roleAssignment2 = createRoleAssignmentRecord(ASSIGNMENT_2, CASE_ID2);
+            RoleAssignmentResource roleAssignment3 = createRoleAssignmentRecord(ASSIGNMENT_3, CASE_ID3);
             RoleAssignmentResponse response = createRoleAssignmentResponse(asList(
-                roleAssignment1, roleAssignment2
+                roleAssignment1, roleAssignment2, roleAssignment3
             ));
 
             RoleAssignments mapped = instance.toRoleAssignments(response);
@@ -135,10 +141,11 @@ class RoleAssignmentsMapperTest {
             List<RoleAssignment> roleAssignments = mapped.getRoleAssignments();
 
             assertAll(
-                () -> assertThat(roleAssignments.size(), is(2)),
+                () -> assertThat(roleAssignments.size(), is(3)),
 
                 () -> assertThat(roleAssignments.get(0), matchesRoleAssignmentResource(roleAssignment1)),
-                () -> assertThat(roleAssignments.get(1), matchesRoleAssignmentResource(roleAssignment2))
+                () -> assertThat(roleAssignments.get(1), matchesRoleAssignmentResource(roleAssignment2)),
+                () -> assertThat(roleAssignments.get(2), matchesRoleAssignmentResource(roleAssignment3))
             );
         }
 
@@ -274,6 +281,25 @@ class RoleAssignmentsMapperTest {
             .region(Optional.of("Hampshire"))
             .location(Optional.of("Southampton"))
             .contractType(Optional.of("SALARIED")) // SALARIED, FEEPAY
+            .build();
+    }
+
+    private RoleAssignmentResource createRoleAssignmentEnforcementRecord(String id, String caseId) {
+        return RoleAssignmentResource.builder()
+            .id(id)
+            .actorIdType(ActorIdType.IDAM.name())
+            .actorId("aecfec12-1f9a-40cb-bd8c-7a9f3506e67c")
+            .roleType(RoleType.ORGANISATION.name())
+            .roleName("Bailiff")
+            .classification(Classification.PUBLIC.name())
+            .grantType(GrantType.STANDARD.name())
+            .roleCategory(RoleCategory.ENFORCEMENT.name())
+            .readOnly(false)
+            .beginTime(BEGIN_TIME)
+            .endTime(END_TIME)
+            .created(CREATED)
+            .authorisations(Collections.emptyList())
+            .attributes(createRoleAssignmentRecordAttribute(caseId))
             .build();
     }
 
