@@ -53,7 +53,7 @@ class JwtDecoderIT {
 
     private final MockMvc mockMvc;
 
-    private static final String VALID_ISSUER_WEB_PUBLIC = "http://localhost:5000/o";
+    private static final String VALID_ISSUER_WEB_PUBLIC = "http://localhost:9002/o";
     private static final String VALID_ISSUER_FORGEROCK = "http://fr-am:8080/openam/oauth2/hmcts";
 
     private static final int ONE_HOUR_IN_SECONDS = 3600;

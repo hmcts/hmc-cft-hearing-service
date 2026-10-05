@@ -154,4 +154,15 @@
   <suppress>
       <cve>CVE-2026-89044</cve>
   </suppress>
+  
+   <suppress>
+      <cve>CVE-2026-41707</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
+    file name: angus-activation-2.0.3.jar
+    ]]></notes>
+    <cve>CVE-2025-7962</cve>
+  </suppress>
 </suppressions>
