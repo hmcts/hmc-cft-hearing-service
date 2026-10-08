@@ -232,7 +232,7 @@ ext {
   set('commons-lang3.version', '3.18.0')
   set('tomcat.version', '10.1.59')
   set('httpcore5.version', '5.4.3')
-  set('netty.version', '4.1.137.Final')
+  set('netty.version', '4.1.138.Final')
 
   junit                 = '5.13.4'
   junitPlatform         = '1.13.4'
@@ -382,6 +382,10 @@ dependencies {
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.13'
   implementation group: 'org.mapstruct', name: 'mapstruct', version: mapstruct
   implementation group: 'org.projectlombok', name: 'lombok', version: lombok
+
+  implementation group: 'org.apache.qpid', name: 'proton-j', version: '0.35.0'
+  implementation group: 'org.apache.httpcomponents.core5', name: 'httpcore5', version: '5.4.3'
+
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombok
   annotationProcessor group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: '0.2.0'
   annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstruct
