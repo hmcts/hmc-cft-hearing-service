@@ -11,95 +11,74 @@
   </suppress>
 
   <suppress>
-    <cve>CVE-2026-47892</cve>
-  </suppress>
-
-  <suppress>
-    <cve>CVE-2026-47893</cve>
-  </suppress>
-
-  <suppress>
-    <cve>CVE-2026-59270</cve>
-  </suppress>
-
-  <suppress>
-    <cve>CVE-2026-59280</cve>
-  </suppress>
-
-  <suppress>
+    <notes><![CDATA[
+        The Azure Key Vault Keys advisory does not apply to these Azure Service Bus runtime artifacts:
+        azure-core, azure-core-amqp, azure-core-http-netty and azure-json
+        However, dependency-check incorrectly matches the shared Azure SDK (azure_sdk_for_java) CPE against them.
+        See https://github.com/dependency-check/DependencyCheck/issues/8553
+        ]]>
+    </notes>
     <cve>CVE-2026-33117</cve>
   </suppress>
 
   <suppress>
-      <cve>CVE-2026-59283</cve>
+  <notes>
+    Not applicable - Spring Framework 6.2.20 is Enterprise Support only.
+    The affected CVEs do not apply to the version currently in use.
+    No remediation is required for this dependency at present.
+    This suppression should be reviewed if the Spring Framework version is upgraded.
+  </notes>
+    <cve>CVE-2026-47892</cve>
+    <cve>CVE-2026-47893</cve>
+    <cve>CVE-2026-59270</cve>
+    <cve>CVE-2026-59283</cve>
+    <cve>CVE-2026-59313</cve>
+    <cve>CVE-2026-59314</cve>
+    <cve>CVE-2026-47841</cve>
+    <cve>CVE-2026-47842</cve>
+    <cve>CVE-2026-47890</cve>
+    <cve>CVE-2026-47891</cve>
+    <cve>CVE-2026-59276</cve>
+    <cve>CVE-2026-59281</cve>
+    <cve>CVE-2026-59282</cve>
+    <cve>CVE-2026-47883</cve>
+    <cve>CVE-2026-47884</cve>
+    <cve>CVE-2026-47885</cve>
+    <cve>CVE-2026-47886</cve>
+    <cve>CVE-2026-47887</cve>
+    <cve>CVE-2026-47888</cve>
+    <cve>CVE-2026-47889</cve>
   </suppress>
 
   <suppress>
-      <cve>CVE-2026-59313</cve>
+    <notes>
+      Not applicable - FreeMarker/SpringTemplateLoader is not present
+      on the runtime classpath or used by this application.
+    </notes>
+    <cve>CVE-2026-59280</cve>
   </suppress>
 
   <suppress>
-      <cve>CVE-2026-59314</cve>
-  </suppress>
-
-  <suppress>
+    <notes>
+      <![CDATA[
+      Spring Data JPA is present, but the application does not accept
+      untrusted Sort/Pageable values for native SQL queries.
+      ]]>
+    </notes>
     <cve>CVE-2026-47834</cve>
   </suppress>
+
   <suppress>
-      <cve>CVE-2026-47841</cve>
+    <notes>
+      Not applicable - this vulnerability requires use of Spring
+      Security DPoP functionality (DPoPProofJwtDecoderFactory),
+      which is not used by this application.
+    </notes>
+    <cve>CVE-2026-41707</cve>
   </suppress>
-  <suppress>
-      <cve>CVE-2026-47842</cve>
-  </suppress>
+
   <suppress>
       <cve>CVE-2026-47874</cve>
-  </suppress>
-  <suppress>
-      <cve>CVE-2026-47890</cve>
-  </suppress>
-  <suppress>
-      <cve>CVE-2026-47891</cve>
-  </suppress>
-  <suppress>
-      <cve>CVE-2026-59276</cve>
-  </suppress>
-  <suppress>
-      <cve>CVE-2026-59281</cve>
-  </suppress>
-  <suppress>
-      <cve>CVE-2026-59282</cve>
-  </suppress>
-
-  <suppress>
-    <cve>CVE-2026-47883</cve>
-  </suppress>
-
-  <suppress>
-      <cve>CVE-2026-47884</cve>
-  </suppress>
-
-  <suppress>
-      <cve>CVE-2026-47885</cve>
-  </suppress>
-
-  <suppress>
-      <cve>CVE-2026-47886</cve>
-  </suppress>
-
-  <suppress>
-      <cve>CVE-2026-47887</cve>
-  </suppress>
-
-  <suppress>
-      <cve>CVE-2026-47888</cve>
-  </suppress>
-
-  <suppress>
-      <cve>CVE-2026-47889</cve>
-  </suppress>
-
-   <suppress>
-      <cve>CVE-2026-41707</cve>
   </suppress>
 
 </suppressions>
