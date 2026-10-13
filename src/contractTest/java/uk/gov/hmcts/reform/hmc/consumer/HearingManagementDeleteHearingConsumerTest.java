@@ -5,10 +5,10 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
+import au.com.dius.pact.core.model.PactSpecVersion;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import io.restassured.RestAssured;
-import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +20,10 @@ import uk.gov.hmcts.reform.hmc.utility.HearingResponsePactUtil;
 
 import java.util.Map;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 @ExtendWith(PactConsumerTestExt.class)
+@PactTestFor(pactVersion = PactSpecVersion.V3)
 public class HearingManagementDeleteHearingConsumerTest extends BasePactTesting {
 
     private static final String PATH_HEARING = "/hearing";
@@ -59,7 +62,7 @@ public class HearingManagementDeleteHearingConsumerTest extends BasePactTesting 
             .path(PATH_HEARING)
             .query(FIELD_HEARING_ID + "=" + TEST_HEARING_ID)
             .method(HttpMethod.DELETE.toString())
-            .body(jsonValidRequest, ContentType.APPLICATION_JSON)
+            .body(jsonValidRequest, APPLICATION_JSON_VALUE)
             .headers(headers)
             .willRespondWith()
             .status(HttpStatus.OK.value())
@@ -81,7 +84,7 @@ public class HearingManagementDeleteHearingConsumerTest extends BasePactTesting 
             .path(PATH_HEARING)
             .query(FIELD_HEARING_ID + "=" + TEST_HEARING_ID)
             .method(HttpMethod.DELETE.toString())
-            .body(jsonInvalidRequest, ContentType.APPLICATION_JSON)
+            .body(jsonInvalidRequest, APPLICATION_JSON_VALUE)
             .headers(headers)
             .willRespondWith()
             .status(HttpStatus.BAD_REQUEST.value())
