@@ -35,36 +35,6 @@
     <notes><![CDATA[
     file name: proton-j-0.34.1.jar
     ]]></notes>
-    <cve>CVE-2026-66257</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-    file name: proton-j-0.34.1.jar
-    ]]></notes>
-    <cve>CVE-2026-66273</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-    file name: proton-j-0.34.1.jar
-    ]]></notes>
-    <cve>CVE-2026-66274</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-    file name: proton-j-0.34.1.jar
-    ]]></notes>
-    <cve>CVE-2026-66277</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-    file name: proton-j-0.34.1.jar
-    ]]></notes>
-    <cve>CVE-2026-66275</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-    file name: proton-j-0.34.1.jar
-    ]]></notes>
     <cve>CVE-2026-66276</cve>
   </suppress>
   <suppress>
