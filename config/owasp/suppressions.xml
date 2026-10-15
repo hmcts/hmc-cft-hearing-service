@@ -88,14 +88,6 @@
   </suppress>
   
   <suppress>
-      <cve>CVE-2026-59313</cve>
-  </suppress>
-  
-  <suppress>
-      <cve>CVE-2026-59314</cve>
-  </suppress>
-  
-  <suppress>
     <cve>CVE-2026-47834</cve>
   </suppress>
   <suppress>
