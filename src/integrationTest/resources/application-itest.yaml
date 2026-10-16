@@ -24,7 +24,7 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: http://localhost:${wiremock.server.port:5000}/o
+            issuer-uri: http://localhost:${wiremock.server.port:9002}/o
 ccd:
   data-store:
     url-header-name: ${CCD_DATA_STORE_URL_HEADER_NAME:Data-Store-Url}
@@ -38,9 +38,11 @@ role:
 
 idam:
   api:
-    url: http://localhost:${wiremock.server.port:5000}
+    url: http://localhost:${wiremock.server.port:9002}
+  oidc:
+    url: http://localhost:${wiremock.server.port:9002}
   s2s-auth:
-    url: http://localhost:${wiremock.server.port:5000}/s2s
+    url: http://localhost:${wiremock.server.port:9002}/s2s
 
 fh:
   ad:
@@ -65,6 +67,9 @@ hmcts-deployment-id:
 supportTools:
   service-whitelist: ${SUPPORT_TOOLS_AUTHORISED_SERVICES:tech_admin_ui}
   role-whitelist:  ${SUPPORT_TOOLS_AUTHORISED_ROLES:hmc_tech_admin}
+
+headerBased:
+  allowed-override-hostpatterns: ${OVERRIDE_HOSTS:^https://[a-z0-9-]+-pr-\d+\.(preview|aat|demo)\.platform\.hmcts\.net(?::\d{1,5})?(?:/.*)?$}
 
 wiremock:
   server:

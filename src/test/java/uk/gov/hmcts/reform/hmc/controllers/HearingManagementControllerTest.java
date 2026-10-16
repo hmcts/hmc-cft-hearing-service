@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -48,6 +47,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.AWAITING_ACTUALS;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.INBOUND_S2S_TOKEN;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_SERVICE_EXCEPTION_MESSAGE;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
@@ -227,7 +227,8 @@ class HearingManagementControllerTest {
         void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefLuhn() {
             final String validCaseRef = "9372710950276233";
             when(hearingManagementService.getHearings(any(), any()))
-                .thenReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, "HEARING_REQUESTED"));
+                .thenReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef,
+                                                                             HearingStatus.HEARING_REQUESTED.name()));
 
             GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, null);
             verify(hearingManagementService).getHearings(any(), any());
@@ -236,13 +237,41 @@ class HearingManagementControllerTest {
         }
 
         @Test
+        void shouldReturnHearingRequest_WhenGetHearingIsUpdate_Requested() {
+            final String validCaseRef = "9372710950276233";
+            when(hearingManagementService.getHearings(any(), any()))
+                .thenReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef,
+                                                                             HearingStatus.UPDATE_REQUESTED.name()));
+
+            GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, null);
+            verify(hearingManagementService).getHearings(any(), any());
+            assertThat(hearingRequest.getCaseRef()).isEqualTo(validCaseRef);
+            assertThat(hearingRequest.getCaseHearings().getFirst().getHearingIsLinkedFlag()).isTrue();
+            assertThat(hearingRequest.getCaseHearings().getFirst().getHmcStatus())
+                .isEqualTo(HearingStatus.UPDATE_REQUESTED.name());
+        }
+
+        @Test
+        void shouldReturnHearingRequest_WhenGetHearingIsListed() {
+            final String validCaseRef = "9372710950276233";
+            when(hearingManagementService.getHearings(any(), any()))
+                .thenReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, AWAITING_ACTUALS));
+
+            GetHearingsResponse hearingRequest = controller.getHearings(validCaseRef, null);
+            verify(hearingManagementService).getHearings(any(), any());
+            assertThat(hearingRequest.getCaseRef()).isEqualTo(validCaseRef);
+            assertThat(hearingRequest.getCaseHearings().getFirst().getHearingIsLinkedFlag()).isTrue();
+            assertThat(hearingRequest.getCaseHearings().getFirst().getHmcStatus()).isEqualTo(AWAITING_ACTUALS);
+        }
+
+        @Test
         void shouldReturnHearingRequest_WhenGetHearingsForValidCaseRefAndListedStatus() {
             final String validCaseRef = "9372710950276233";
             when(hearingManagementService.getHearings(any(), any()))
                 .thenReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(validCaseRef, "LISTED"));
 
-            List<String> rolesRequired = Lists.newArrayList(HEARING_VIEWER, LISTED_HEARING_VIEWER);
-            List<String> filteredRoleAssignments = Lists.newArrayList(LISTED_HEARING_VIEWER);
+            List<String> rolesRequired = List.of(HEARING_VIEWER, LISTED_HEARING_VIEWER);
+            List<String> filteredRoleAssignments = List.of(LISTED_HEARING_VIEWER);
 
             when(accessControlService.verifyCaseAccess(validCaseRef, rolesRequired, null))
                 .thenReturn(filteredRoleAssignments);

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,6 +19,8 @@ import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupRequest;
 import uk.gov.hmcts.reform.hmc.model.linkedhearinggroup.HearingLinkGroupResponse;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.LinkedHearingGroupService;
+
+import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
@@ -93,8 +94,8 @@ public class LinkHearingGroupController {
         request.getHearingsInGroup().stream()
                 .map(hearingGroup -> hearingGroup.getHearingId())
                 .forEach(hearingId -> accessControlService.verifyAccess(
-                        Long.valueOf(hearingId),
-                        Lists.newArrayList(HEARING_MANAGER)));
+                    Long.valueOf(hearingId),
+                    List.of(HEARING_MANAGER)));
     }
 
     private String getServiceName(String clientS2SToken) {

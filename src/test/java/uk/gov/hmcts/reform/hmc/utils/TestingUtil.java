@@ -70,6 +70,8 @@ import uk.gov.hmcts.reform.hmc.model.HearingLocation;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.HearingResultType;
 import uk.gov.hmcts.reform.hmc.model.HearingWindow;
+import uk.gov.hmcts.reform.hmc.model.HearingsForListOfCasesPaginatedRequest;
+import uk.gov.hmcts.reform.hmc.model.HearingsForListOfCasesPaginatedRequestCaseReference;
 import uk.gov.hmcts.reform.hmc.model.IndividualDetails;
 import uk.gov.hmcts.reform.hmc.model.LocationType;
 import uk.gov.hmcts.reform.hmc.model.ManageExceptionRequest;
@@ -1621,7 +1623,7 @@ public class TestingUtil {
         return request;
     }
 
-    public static HearingActual hearingActualWithOutcomeEmpty() {
+    public static HearingActual hearingActualWithOutcomeNull() {
         ActualHearingDay actualHearingDay = new ActualHearingDay();
         actualHearingDay.setHearingDate(LocalDate.now().plusDays(2));
         actualHearingDay.setNotRequired(true);
@@ -1648,12 +1650,11 @@ public class TestingUtil {
         return hearingActualsOutcome;
     }
 
-    public static HearingActual hearingActualOutcomeAndActualHearingDaysNull(Boolean flag) {
+    public static HearingActual hearingActualOutcomeAndActualHearingDaysNull() {
         HearingActualsOutcome hearingActualsOutcome = new HearingActualsOutcome();
 
         ActualHearingDay actualHearingDay = new ActualHearingDay();
         actualHearingDay.setHearingDate(LocalDate.now().plusDays(2));
-        actualHearingDay.setNotRequired(flag);
 
         HearingActual hearingActual = new HearingActual();
 
@@ -1663,13 +1664,19 @@ public class TestingUtil {
         return hearingActual;
     }
 
+    public static HearingActual hearingActualOutcomeAndActualHearingDaysNull(Boolean flag) {
+        HearingActual hearingActual = hearingActualOutcomeAndActualHearingDaysNull();
+        hearingActual.getActualHearingDays().get(0).setNotRequired(flag);
+        return hearingActual;
+    }
+
     public static HearingActual oneActualHearingDayIsNotNull(Boolean flag1, Boolean flag2) {
         ActualHearingDay actualHearingDay1 = new ActualHearingDay();
         actualHearingDay1.setHearingDate(LocalDate.now().plusDays(2));
         actualHearingDay1.setNotRequired(flag1);
 
         ActualHearingDay actualHearingDay2 = new ActualHearingDay();
-        actualHearingDay2.setHearingDate(LocalDate.now().plusDays(2));
+        actualHearingDay2.setHearingDate(LocalDate.now().plusDays(3));
         actualHearingDay2.setNotRequired(flag2);
 
         HearingActual hearingActual = new HearingActual();
@@ -1974,5 +1981,15 @@ public class TestingUtil {
         ActualHearingEntity actualHearingEntity = actualHearingEntity(PartyType.IND);
         hearingEntity.getHearingResponses().get(0).setActualHearingEntity(actualHearingEntity);
         return hearingEntity;
+    }
+
+    public static HearingsForListOfCasesPaginatedRequest createRequest(List<String> caseReferences) {
+        List<HearingsForListOfCasesPaginatedRequestCaseReference> requestCaseReferences = new ArrayList<>();
+
+        caseReferences
+            .forEach(caseReference -> requestCaseReferences
+                .add(new HearingsForListOfCasesPaginatedRequestCaseReference(caseReference)));
+
+        return new HearingsForListOfCasesPaginatedRequest(10, 0, requestCaseReferences);
     }
 }

@@ -2,9 +2,12 @@ package uk.gov.hmcts.reform.hmc.validator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.PutHearingStatus;
@@ -18,15 +21,16 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.hmc.exceptions.ValidationError.INVALID_HEARING_ID_DETAILS;
 
+@ExtendWith(MockitoExtension.class)
 class HearingIdValidatorTest {
 
     private static final Long VALID_HEARING_ID = 2000000000L;
 
-    @InjectMocks
     private HearingIdValidator hearingIdValidator;
 
     @Mock
@@ -39,8 +43,7 @@ class HearingIdValidatorTest {
     private ActualHearingDayRepository actualHearingDayRepository;
 
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
+    void setUp() {
         hearingIdValidator =
                 new HearingIdValidator(hearingRepository, actualHearingRepository, actualHearingDayRepository);
     }
@@ -52,6 +55,7 @@ class HearingIdValidatorTest {
                 null, 1L);
         when(hearingRepository.findById(VALID_HEARING_ID)).thenReturn(Optional.of(expectedHearing));
         Optional<HearingEntity> hearing = hearingRepository.findById(VALID_HEARING_ID);
+        assertTrue(hearing.isPresent());
         assertEquals(expectedHearing, hearing.get());
     }
 
@@ -78,10 +82,12 @@ class HearingIdValidatorTest {
         assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
     }
 
-    @Test
-    void shouldFailAsAlphamericInvalidHearingIdFormat() {
-        Exception exception = assertThrows(BadRequestException.class, () -> hearingIdValidator
-                .isValidFormat("ABCDEFG"));
+    @ParameterizedTest
+    @ValueSource(strings = {"2", "ABCDEFGHIJ", "234567890A", "1000000000"})
+    @EmptySource
+    void shouldFailAsInvalidHearingIdFormat(String hearingId) {
+        Exception exception = assertThrows(BadRequestException.class,
+                                           () -> hearingIdValidator.isValidFormat(hearingId));
         assertEquals(INVALID_HEARING_ID_DETAILS, exception.getMessage());
     }
 

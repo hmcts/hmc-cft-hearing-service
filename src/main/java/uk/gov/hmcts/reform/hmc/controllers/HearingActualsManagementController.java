@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.controllers;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -15,6 +14,8 @@ import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.model.HearingActual;
 import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingActualsService;
+
+import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.hmc.data.SecurityUtils.SERVICE_AUTHORIZATION;
@@ -50,7 +51,7 @@ public class HearingActualsManagementController {
     public void updateHearingActuals(@PathVariable("id") Long hearingId,
             @RequestHeader(SERVICE_AUTHORIZATION) String clientS2SToken,
             @RequestBody @Valid HearingActual request) {
-        accessControlService.verifyHearingCaseAccess(hearingId, Lists.newArrayList(HEARING_MANAGER));
+        accessControlService.verifyHearingCaseAccess(hearingId, List.of(HEARING_MANAGER));
         hearingActualsService.updateHearingActuals(hearingId, getServiceName(clientS2SToken), request);
     }
 

@@ -8,9 +8,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,20 +24,25 @@ import uk.gov.hmcts.reform.hmc.data.RoleAssignmentAttributesResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
+import uk.gov.hmcts.reform.hmc.interceptors.OverrideHostPolicy;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.getJsonString;
 import static uk.gov.hmcts.reform.hmc.WiremockFixtures.stubReturn200RoleAssignments;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.AWAITING_ACTUALS;
 import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.CASE_TYPE;
 import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.JURISDICTION;
 import static uk.gov.hmcts.reform.hmc.controllers.HearingManagementControllerIT.USER_ID;
+import static uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus.UPDATE_SUBMITTED;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_MANAGER;
 import static uk.gov.hmcts.reform.hmc.service.AccessControlServiceImpl.HEARING_VIEWER;
 
@@ -43,6 +53,9 @@ class HearingActualControllerIT extends BaseTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    protected OverrideHostPolicy overrideHostPolicy;
 
     private static final String URL = "/hearingActuals";
 
@@ -59,21 +72,33 @@ class HearingActualControllerIT extends BaseTest {
             stubReturn200RoleAssignments(USER_ID, response);
         }
 
-        @Test
+        @ParameterizedTest(name = "[{index}] hearingId={0}, status={1}")
+        @MethodSource("hearingActualStatuses")
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
-        void shouldReturn200_WhenHearingExists() throws Exception {
-            mockMvc.perform(get(URL + "/2000000000")
+        void shouldReturn200_WhenHearingExists(String hearingId,
+                                               String expectedStatus,
+                                               String expectedCaseRef) throws Exception {
+            mockMvc.perform(get(URL + "/" + hearingId)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.hmcStatus").value(expectedStatus))
+                .andExpect(jsonPath("$.caseDetails.caseRef").value(expectedCaseRef))
                 .andReturn();
+        }
+
+        private static Stream<Arguments> hearingActualStatuses() {
+            return Stream.of(
+                arguments("2000000001", UPDATE_SUBMITTED.name(), "9372710950276233"),
+               arguments("2000000000", AWAITING_ACTUALS, "9372710950276233")
+            );
         }
 
         @Test
         void shouldReturn404_WhenHearingDoesNotExist() throws Exception {
-            mockMvc.perform(get(URL + "/2000000001")
+            mockMvc.perform(get(URL + "/2000000009")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is(HttpStatus.NOT_FOUND.value()))
-                .andExpect(jsonPath("$.errors", hasItem("No hearing found for reference: 2000000001")))
+                .andExpect(jsonPath("$.errors", hasItem("No hearing found for reference: 2000000009")))
                 .andReturn();
         }
 
@@ -120,6 +145,7 @@ class HearingActualControllerIT extends BaseTest {
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldCallProvidedCcdAndAmUrl_WhenHeadersProvided() throws Exception {
+            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(true);
             mockMvc.perform(get(URL + "/2000000000")
                                 .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
                                 .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())
@@ -132,7 +158,22 @@ class HearingActualControllerIT extends BaseTest {
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        void shouldNotCallProvidedCcdAndAmUrl_WhenHeadersProvidedInvalid() throws Exception {
+            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(false);
+            mockMvc.perform(get(URL + "/2000000000")
+                                .header(dataStoreUrlManager.getUrlHeaderName(), "dataStoreUrl")
+                                .header(roleAssignmentUrlManager.getUrlHeaderName(), "roleAssignmentUrl")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+
+            amServer.verify(0, WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
+            dataStoreServer.verify(0, WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldCallProvidedCcdUrl_WhenCcdHeaderProvided() throws Exception {
+            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(true);
             mockMvc.perform(get(URL + "/2000000000")
                                 .header(dataStoreUrlManager.getUrlHeaderName(), dataStoreServer.baseUrl())
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -143,13 +184,39 @@ class HearingActualControllerIT extends BaseTest {
 
         @Test
         @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        void shouldNotCallProvidedCcdUrl_WhenCcdHeaderInvalid() throws Exception {
+            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(false);
+            mockMvc.perform(get(URL + "/2000000000")
+                                .header(dataStoreUrlManager.getUrlHeaderName(), "ccdDataStoreUrl")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+            dataStoreServer.verify(0, WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
+            WireMock.verify(WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
         void shouldCallProvidedAmUrl_WhenAmHeaderProvided() throws Exception {
+            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(true);
             mockMvc.perform(get(URL + "/2000000000")
                                 .header(roleAssignmentUrlManager.getUrlHeaderName(), amServer.baseUrl())
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
 
             amServer.verify(WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
+            WireMock.verify(WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
+        }
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        void shouldNotCallProvidedAmUrl_WhenAmHeaderInvalid() throws Exception {
+            Mockito.when(overrideHostPolicy.isAllowed(Mockito.anyString())).thenReturn(false);
+            mockMvc.perform(get(URL + "/2000000000")
+                                .header(roleAssignmentUrlManager.getUrlHeaderName(), "amRoleAssignmentUrl")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+
+            amServer.verify(0, WireMock.getRequestedFor(WireMock.urlEqualTo("/am/role-assignments/actors/" + USER_ID)));
             WireMock.verify(WireMock.getRequestedFor(WireMock.urlEqualTo("/cases/9372710950276233")));
         }
     }

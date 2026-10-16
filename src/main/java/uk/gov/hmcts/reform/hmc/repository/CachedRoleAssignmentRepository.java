@@ -6,8 +6,7 @@ import org.springframework.web.context.annotation.RequestScope;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 
 import java.util.Map;
-
-import static com.microsoft.applicationinsights.core.dependencies.google.common.collect.Maps.newConcurrentMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Qualifier(CachedRoleAssignmentRepository.QUALIFIER)
@@ -18,7 +17,7 @@ public class CachedRoleAssignmentRepository implements RoleAssignmentRepository 
 
     public static final String QUALIFIER = "cached";
 
-    private final Map<String, RoleAssignmentResponse> roleAssignments = newConcurrentMap();
+    private final Map<String, RoleAssignmentResponse> roleAssignments = new ConcurrentHashMap<>();
 
     public CachedRoleAssignmentRepository(@Qualifier(DefaultRoleAssignmentRepository.QUALIFIER)
                                               RoleAssignmentRepository roleAssignmentRepository) {

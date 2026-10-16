@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.hmc.helper;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingAttendeeDetailsEntity;
 import uk.gov.hmcts.reform.hmc.data.HearingDayDetailsEntity;
+import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.model.Attendee;
 import uk.gov.hmcts.reform.hmc.model.CaseHearing;
 import uk.gov.hmcts.reform.hmc.model.GetHearingsResponse;
@@ -53,6 +56,23 @@ class GetHearingsResponseMapperTest {
         assertTrue(response.getCaseHearings().get(0).getHearingChannels().contains(SOME_CHANNEL_TYPE));
     }
 
+    @ParameterizedTest(name = "[{index}] hearingStatus={0}, hmcStatus={1}")
+    @CsvSource({
+        "LISTED, AWAITING_ACTUALS",
+        "UPDATE_REQUESTED, UPDATE_REQUESTED",
+        "UPDATE_SUBMITTED, UPDATE_SUBMITTED"
+    })
+    void toHearingsResponseWhenHearingStatusIsMapped(String hearingStatus, String expectedHmcStatus) {
+        List<CaseHearingRequestEntity> entities = Arrays.asList(TestingUtil.getCaseHearingsEntities());
+        entities.get(0).getHearing().setStatus(hearingStatus);
+        GetHearingsResponseMapper getHearingsResponseMapper = new GetHearingsResponseMapper();
+        GetHearingsResponse response = getHearingsResponseMapper.toHearingsResponse(VALID_CASE_REF, entities);
+        assertEquals(VALID_CASE_REF, response.getCaseRef());
+        assertEquals("TEST", response.getHmctsServiceCode());
+        assertEquals(1, response.getCaseHearings().size());
+        assertEquals(expectedHmcStatus, response.getCaseHearings().get(0).getHmcStatus());
+    }
+
     @Test
     void toHearingsResponseWhenDataIsPresentAndIsPresidingIsFalse() {
         List<CaseHearingRequestEntity> entities = Arrays.asList(TestingUtil.getCaseHearingsEntities());
@@ -72,6 +92,7 @@ class GetHearingsResponseMapperTest {
         assertEquals("PanelUser1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getPanelMemberIds().get(0));
         assertNull(response.getCaseHearings().get(0).getHearingDaySchedule().get(0).getHearingJudgeId());
+        assertEquals(HearingStatus.HEARING_REQUESTED.name(), response.getCaseHearings().get(0).getHmcStatus());
     }
 
     @Test
@@ -93,6 +114,7 @@ class GetHearingsResponseMapperTest {
         assertEquals("PanelUser1", response.getCaseHearings().get(0).getHearingDaySchedule().get(0)
             .getHearingJudgeId());
         assertEquals(0, response.getCaseHearings().get(0).getHearingDaySchedule().get(0).getPanelMemberIds().size());
+        assertEquals(HearingStatus.HEARING_REQUESTED.name(), response.getCaseHearings().get(0).getHmcStatus());
     }
 
     @Test

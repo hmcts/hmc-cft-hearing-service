@@ -51,7 +51,7 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: ${IDAM_OIDC_URL:http://localhost:5000}/o
+            issuer-uri: ${IDAM_OIDC_URL:http://localhost:9002}/o
         registration:
           oidc:
             client-id: internal
@@ -125,21 +125,26 @@ role:
 idam:
   api:
     url: ${IDAM_API_URL:http://localhost:5000}
+  oidc:
+    url: ${IDAM_OIDC_URL:http://localhost:9002}/o
+    use_oidc_api: true
   s2s-auth:
     microservice: hmc_cft_hearing_service
     totp_secret: ${IDAM_KEY_CFT_HEARING_SERVICE:AAAAAAAAAAAAAAAA}
     url: ${S2S_URL:http://localhost:4502}
   s2s-authorised:
-    services: ${CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES:xui_webapp,hmc_hmi_inbound_adapter,sscs,fis_hmc_api,pcs_api}
+    services: ${CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES:xui_webapp,hmc_hmi_inbound_adapter,sscs,fis_hmc_api,pcs_api,prl-cos-api}
   client:
     id: hmc_cft_hearing_service
     scope: openid roles profile
     # same for all environments - not used in hmc but configured as idam mandates for token generation
     redirect_uri: https://cft-hearing-service/oauth2redirect
     secret: ${CFT_HEARING_SERVICE_IDAM_CLIENT_SECRET:AAAAAAAAAAAAAAAA}
-
-oidc:
-  issuer: ${OIDC_ISSUER:http://fr-am:8080/openam/oauth2/hmcts}
+  security:
+    allowed-issuers:
+      - ${OIDC_ISSUER_WEB_PUBLIC:http://localhost:9002/o}
+      - ${OIDC_ISSUER_HMCTS_ACCESS:http://localhost:9002/o}
+      - ${OIDC_ISSUER:http://fr-am:8080/openam/oauth2/hmcts}
 
 http:
   client:
@@ -180,12 +185,15 @@ fh:
     destination-system: ${HMI_DESTINATION_SYSTEM:destination-system}
 
 supportTools:
-  service-whitelist: ${SUPPORT_TOOLS_AUTHORISED_SERVICES:tech_admin_ui}
+  service-whitelist: ${SUPPORT_TOOLS_AUTHORISED_SERVICES:hmc-admin-ui}
   role-whitelist:  ${SUPPORT_TOOLS_AUTHORISED_ROLES:hmc_tech_admin}
 
 hmac:
   secrets:
     hmi-to-hmc: ${HMI_TO_HMC_SIGNING_SECRET:}
+
+headerBased:
+  allowed-override-hostpatterns: ${OVERRIDE_HOSTS:^https://[a-z0-9-]+-pr-\d+\.(preview|aat|demo)\.platform\.hmcts\.net(?::\d{1,5})?(?:/.*)?$}
 
 LOGGING:
   LEVEL:
