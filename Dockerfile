@@ -1,6 +1,6 @@
 ARG PLATFORM=""
 # renovate: datasource=github-releases depName=microsoft/ApplicationInsights-Java
-ARG APP_INSIGHTS_AGENT_VERSION=3.5.4
+ARG APP_INSIGHTS_AGENT_VERSION=3.7.10
 FROM hmctsprod.azurecr.io/imported/eclipse-temurin${PLATFORM}:21 AS builder
 WORKDIR /builder
 ARG JAR_FILE=build/libs/hmc-cft-hearing-service.jar
