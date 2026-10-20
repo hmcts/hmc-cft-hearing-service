@@ -192,6 +192,8 @@ class MessageProcessorIT extends BaseTest {
         listAppender.start();
         logger.addAppender(listAppender);
 
+        final Level originalLogLevel = getLevel(logger);
+
         MessageProcessor messageProcessor = new MessageProcessor(OBJECT_MAPPER, inboundQueueService);
 
         given(messageContext.getMessage()).willReturn(message);
@@ -201,6 +203,8 @@ class MessageProcessorIT extends BaseTest {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+
+        detachAppender(logger, listAppender, originalLogLevel);
 
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size());
@@ -221,6 +225,8 @@ class MessageProcessorIT extends BaseTest {
         listAppender.start();
         logger.addAppender(listAppender);
 
+        final Level originalLogLevel = getLevel(logger);
+
         Logger loggerMessageProcessor = (Logger) LoggerFactory.getLogger(MessageProcessor.class);
         ListAppender<ILoggingEvent> listAppenderMessageProcessor = new ListAppender<>();
         listAppenderMessageProcessor.start();
@@ -236,6 +242,8 @@ class MessageProcessorIT extends BaseTest {
         given(messageContext.getMessage()).willReturn(message);
         given(messageContext.getMessage().getApplicationProperties()).willReturn(applicationProperties);
         messageProcessor.processMessage(errorJsonNode, messageContext);
+
+        detachAppender(logger, listAppender, originalLogLevel);
 
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(3, logsList.size());
@@ -274,6 +282,8 @@ class MessageProcessorIT extends BaseTest {
         listAppender.start();
         logger.addAppender(listAppender);
 
+        final Level originalLogLevel = getLevel(logger);
+
         Logger loggerMessageProcessor = (Logger) LoggerFactory.getLogger(MessageProcessor.class);
         ListAppender<ILoggingEvent> listAppenderMessageProcessor = new ListAppender<>();
         listAppenderMessageProcessor.start();
@@ -288,6 +298,8 @@ class MessageProcessorIT extends BaseTest {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+
+        detachAppender(logger, listAppender, originalLogLevel);
 
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(3, logsList.size());
@@ -559,5 +571,18 @@ class MessageProcessorIT extends BaseTest {
                         .toList();
 
         assertTrue(hearingSessionStartAndEndTimes.containsAll(expectedPairs));
+    }
+
+    private static Level getLevel(Logger logger) {
+        final Level originalLogLevel = logger.getLevel();
+        logger.setLevel(Level.INFO);
+        return originalLogLevel;
+    }
+
+    private static void detachAppender(Logger logger, ListAppender<ILoggingEvent> listAppender,
+                                       Level originalLogLevel) {
+        logger.detachAppender(listAppender);
+        logger.setLevel(originalLogLevel);
+        listAppender.stop();
     }
 }
