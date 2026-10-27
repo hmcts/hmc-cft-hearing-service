@@ -60,16 +60,6 @@
 
   <suppress>
     <notes>
-      <![CDATA[
-      Spring Data JPA is present, but the application does not accept
-      untrusted Sort/Pageable values for native SQL queries.
-      ]]>
-    </notes>
-    <cve>CVE-2026-47834</cve>
-  </suppress>
-
-  <suppress>
-    <notes>
       Not applicable - this vulnerability requires use of Spring
       Security DPoP functionality (DPoPProofJwtDecoderFactory),
       which is not used by this application.
