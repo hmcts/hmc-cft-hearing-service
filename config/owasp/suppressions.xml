@@ -11,17 +11,6 @@
   </suppress>
 
   <suppress>
-    <notes><![CDATA[
-        The Azure Key Vault Keys advisory does not apply to these Azure Service Bus runtime artifacts:
-        azure-core, azure-core-amqp, azure-core-http-netty and azure-json
-        However, dependency-check incorrectly matches the shared Azure SDK (azure_sdk_for_java) CPE against them.
-        See https://github.com/dependency-check/DependencyCheck/issues/8553
-        ]]>
-    </notes>
-    <cve>CVE-2026-33117</cve>
-  </suppress>
-
-  <suppress>
   <notes>
     Not applicable - Spring Framework 6.2.20 is Enterprise Support only.
     The affected CVEs do not apply to the version currently in use.
