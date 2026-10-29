@@ -7,7 +7,7 @@
     dependency-check incorrectly matches the shared Azure SDK CPE against them.
     See https://github.com/dependency-check/DependencyCheck/issues/8553
     ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.azure/(azure-core|azure-core-amqp|azure-core-http-netty|azure-json)@.*$</packageUrl>
+    
     <cve>CVE-2026-33117</cve>
   </suppress>
 
