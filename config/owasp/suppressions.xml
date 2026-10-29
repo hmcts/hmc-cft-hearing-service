@@ -11,6 +11,16 @@
   </suppress>
 
   <suppress>
+    <notes><![CDATA[
+    CVE-2026-33117 affects the Azure Key Vault Keys library's local cryptographic
+    verification path. It does not apply to these Azure Service Bus runtime artifacts;
+    dependency-check matches them because they share the Azure SDK CPE.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.azure/(azure-core|azure-core-amqp|azure-core-http-netty|azure-json)@[^/]+$</packageUrl>
+    <cve>CVE-2026-33117</cve>
+  </suppress>
+
+  <suppress>
   <notes>
     Not applicable - Spring Framework 6.2.20 is Enterprise Support only.
     The affected CVEs do not apply to the version currently in use.
