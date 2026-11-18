@@ -379,7 +379,7 @@ dependencies {
   implementation group: 'org.projectlombok', name: 'lombok', version: lombok
 
   implementation group: 'org.apache.qpid', name: 'proton-j', version: '0.35.0'
-  implementation group: 'org.apache.httpcomponents.core5', name: 'httpcore5', version: '5.4.3'
+  implementation group: 'org.apache.httpcomponents.core5', name: 'httpcore5', version: '5.4.4'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombok
   annotationProcessor group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: '0.2.0'
