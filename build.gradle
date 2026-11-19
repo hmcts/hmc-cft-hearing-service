@@ -338,7 +338,7 @@ dependencies {
   implementation group: 'org.hibernate.orm', name: 'hibernate-core', version: '6.6.58.Final'                   // spring-boot-starter-data-jpa
 
   implementation group: 'commons-fileupload', name:'commons-fileupload', version:'1.6.0'
-  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
+  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.21.0'
   // end::CVE Vulnerability dependency overrides
 
   // Spring Dependencies
@@ -372,14 +372,14 @@ dependencies {
   implementation group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: jjwt
   implementation group: 'jakarta.inject', name: 'jakarta.inject-api', version: '2.0.1'
   implementation group: 'jakarta.el', name: 'jakarta.el-api', version: '6.0.1'
-  implementation group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.6.4'
+  implementation group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.6.5'
   implementation group: 'org.apache.httpcomponents.core5', name: 'httpcore5', version: '5.4.4'
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.13'
   implementation group: 'org.mapstruct', name: 'mapstruct', version: mapstruct
   implementation group: 'org.projectlombok', name: 'lombok', version: lombok
 
   implementation group: 'org.apache.qpid', name: 'proton-j', version: '0.35.0'
-  implementation group: 'org.apache.httpcomponents.core5', name: 'httpcore5', version: '5.4.3'
+  implementation group: 'org.apache.httpcomponents.core5', name: 'httpcore5', version: '5.4.4'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombok
   annotationProcessor group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: '0.2.0'
