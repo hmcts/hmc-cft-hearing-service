@@ -9,7 +9,7 @@ jms:
           queue-name: ${HMC_SERVICE_BUS_QUEUE:hmc-to-hmi}
           max-retry-attempts: ${HMC_QUEUE_MAX_RETRIES:5}
         outbound:
-          connection-string: ${HMC_OUTBOUND_QUEUE_CONNECTION_STRING::Endpoint=sb://destination1.servicebus.windows.net;SharedAccessKeyName=[KEYNAME];SharedAccessKey=[KEY]}
+          connection-string: ${HMC_OUTBOUND_QUEUE_CONNECTION_STRING:Endpoint=sb://destination1.servicebus.windows.net;SharedAccessKeyName=[KEYNAME];SharedAccessKey=[KEY]}
           queue-name: ${HMC_OUTBOUND_SERVICE_BUS_QUEUE:hmc-to-hmi}
     external:
       connection-string: ${HMC_SERVICE_BUS_CONNECTION_STRING:Endpoint=sb://destination1.servicebus.windows.net;SharedAccessKeyName=[KEYNAME];SharedAccessKey=[KEY]}
