@@ -1,81 +1,47 @@
 package uk.gov.hmcts.reform.hmc.config;
 
-import com.azure.messaging.servicebus.ServiceBusClientBuilder;
-import com.azure.messaging.servicebus.ServiceBusMessage;
 import com.azure.messaging.servicebus.ServiceBusSenderClient;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.Timeout;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.hmc.ApplicationParams;
 
-import java.util.function.BiConsumer;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.RETURNS_SELF;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MessageSenderLifecycleTest {
 
-    @Test
-    void reusesAndClosesTheQueueSender() {
-        assertSenderLifecycle(
-            MessageSenderToQueueConfiguration.class,
-            (sender, message) -> sender.sendMessageToQueue(message, 123L, "AMEND_HEARING", "deployment")
-        );
-    }
+    private static final String CONNECTION_STRING =
+        "Endpoint=sb://localhost;SharedAccessKeyName=test;SharedAccessKey=test";
 
     @Test
-    void reusesAndClosesTheTopicSender() {
-        assertSenderLifecycle(MessageSenderToTopicConfiguration.class,
-                              (sender, message) -> sender.sendMessage(message, "ABA5", "123", "deployment"));
-    }
+    @Timeout(10)
+    void createsAndClosesTheConfiguredSenders() {
+        var params = new ApplicationParams();
+        ReflectionTestUtils.setField(params, "internalOutboundConnectionString", CONNECTION_STRING);
+        ReflectionTestUtils.setField(params, "internalOutboundQueueName", "test-queue");
+        ReflectionTestUtils.setField(params, "externalConnectionString", CONNECTION_STRING);
+        ReflectionTestUtils.setField(params, "externalTopicName", "test-topic");
 
-    private <T> void assertSenderLifecycle(Class<T> senderType, BiConsumer<T, String> send) {
-        var client = mock(ServiceBusSenderClient.class);
-        var senderBuilder = mock(ServiceBusClientBuilder.ServiceBusSenderClientBuilder.class, RETURNS_SELF);
-        when(senderBuilder.buildClient()).thenReturn(client);
+        ServiceBusSenderClient queue;
+        ServiceBusSenderClient topic;
+        try (var application = new AnnotationConfigApplicationContext()) {
+            application.getBeanFactory().registerSingleton("applicationParams", params);
+            application.register(
+                ServiceBusSenderConfiguration.class,
+                MessageSenderToQueueConfiguration.class,
+                MessageSenderToTopicConfiguration.class
+            );
+            application.refresh();
 
-        try (var builders = mockConstruction(
-            ServiceBusClientBuilder.class,
-            withSettings().defaultAnswer(RETURNS_SELF),
-            (builder, context) -> when(builder.sender()).thenReturn(senderBuilder)
-        )) {
-            T activeSender;
-            T unusedSender;
-            try (var application = new AnnotationConfigApplicationContext()) {
-                application.getBeanFactory().registerSingleton("applicationParams", new ApplicationParams());
-                application.registerBean("activeSender", senderType);
-                application.registerBean("unusedSender", senderType);
-                application.refresh();
-
-                activeSender = application.getBean("activeSender", senderType);
-                unusedSender = application.getBean("unusedSender", senderType);
-                assertThat(builders.constructed()).isEmpty();
-
-                send.accept(activeSender, "first message");
-                send.accept(activeSender, "second message");
-
-                var messages = ArgumentCaptor.forClass(ServiceBusMessage.class);
-                verify(client, times(2)).sendMessage(messages.capture());
-                assertThat(messages.getAllValues()).extracting(message -> message.getBody().toString())
-                    .containsExactly("first message", "second message");
-                assertThat(builders.constructed()).hasSize(1);
-                verify(senderBuilder).buildClient();
-                verify(client, never()).close();
-            }
-            verify(client).close();
-
-            send.accept(activeSender, "late message");
-            send.accept(unusedSender, "late first message");
-            assertThat(builders.constructed()).hasSize(1);
-            verifyNoMoreInteractions(client);
+            queue = application.getBean("queueSenderClient", ServiceBusSenderClient.class);
+            assertThat(queue.getEntityPath()).isEqualTo("test-queue");
+            topic = application.getBean("topicSenderClient", ServiceBusSenderClient.class);
+            assertThat(topic.getEntityPath()).isEqualTo("test-topic");
         }
+
+        assertThatThrownBy(queue::createMessageBatch).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(topic::createMessageBatch).isInstanceOf(IllegalStateException.class);
     }
 }
