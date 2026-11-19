@@ -17,6 +17,7 @@ import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
@@ -46,16 +47,20 @@ class MessageSenderLifecycleTest {
             withSettings().defaultAnswer(RETURNS_SELF),
             (builder, context) -> when(builder.sender()).thenReturn(senderBuilder)
         )) {
+            T activeSender;
+            T unusedSender;
             try (var application = new AnnotationConfigApplicationContext()) {
                 application.getBeanFactory().registerSingleton("applicationParams", new ApplicationParams());
-                application.register(senderType);
+                application.registerBean("activeSender", senderType);
+                application.registerBean("unusedSender", senderType);
                 application.refresh();
 
-                var sender = application.getBean(senderType);
+                activeSender = application.getBean("activeSender", senderType);
+                unusedSender = application.getBean("unusedSender", senderType);
                 assertThat(builders.constructed()).isEmpty();
 
-                send.accept(sender, "first message");
-                send.accept(sender, "second message");
+                send.accept(activeSender, "first message");
+                send.accept(activeSender, "second message");
 
                 var messages = ArgumentCaptor.forClass(ServiceBusMessage.class);
                 verify(client, times(2)).sendMessage(messages.capture());
@@ -66,6 +71,11 @@ class MessageSenderLifecycleTest {
                 verify(client, never()).close();
             }
             verify(client).close();
+
+            send.accept(activeSender, "late message");
+            send.accept(unusedSender, "late first message");
+            assertThat(builders.constructed()).hasSize(1);
+            verifyNoMoreInteractions(client);
         }
     }
 }

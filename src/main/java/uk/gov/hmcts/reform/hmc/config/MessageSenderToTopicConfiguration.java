@@ -27,6 +27,7 @@ public class MessageSenderToTopicConfiguration {
 
     private final ApplicationParams applicationParams;
     private ServiceBusSenderClient senderClient;
+    private boolean closed;
 
     public MessageSenderToTopicConfiguration(ApplicationParams applicationParams) {
         this.applicationParams = applicationParams;
@@ -56,6 +57,9 @@ public class MessageSenderToTopicConfiguration {
     }
 
     private synchronized ServiceBusSenderClient getSenderClient() {
+        if (closed) {
+            throw new IllegalStateException("Service Bus sender is closed");
+        }
         if (senderClient == null) {
             senderClient = new ServiceBusClientBuilder()
                 .connectionString(applicationParams.getExternalConnectionString())
@@ -71,6 +75,7 @@ public class MessageSenderToTopicConfiguration {
 
     @PreDestroy
     synchronized void closeSenderClient() {
+        closed = true;
         if (senderClient != null) {
             senderClient.close();
         }

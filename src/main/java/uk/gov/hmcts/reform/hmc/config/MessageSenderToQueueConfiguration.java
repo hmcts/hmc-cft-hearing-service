@@ -26,6 +26,7 @@ public class MessageSenderToQueueConfiguration {
 
     private final ApplicationParams applicationParams;
     private ServiceBusSenderClient senderClient;
+    private boolean closed;
 
     public MessageSenderToQueueConfiguration(ApplicationParams applicationParams) {
         this.applicationParams = applicationParams;
@@ -56,6 +57,9 @@ public class MessageSenderToQueueConfiguration {
     }
 
     private synchronized ServiceBusSenderClient getSenderClient() {
+        if (closed) {
+            throw new IllegalStateException("Service Bus sender is closed");
+        }
         if (senderClient == null) {
             senderClient = new ServiceBusClientBuilder()
                 .connectionString(applicationParams.getInternalOutboundConnectionString())
@@ -71,6 +75,7 @@ public class MessageSenderToQueueConfiguration {
 
     @PreDestroy
     synchronized void closeSenderClient() {
+        closed = true;
         if (senderClient != null) {
             senderClient.close();
         }
