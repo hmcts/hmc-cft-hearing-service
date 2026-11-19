@@ -5,6 +5,7 @@ import com.azure.core.util.ConfigurationBuilder;
 import com.azure.messaging.servicebus.ServiceBusClientBuilder;
 import com.azure.messaging.servicebus.ServiceBusMessage;
 import com.azure.messaging.servicebus.ServiceBusSenderClient;
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ import static uk.gov.hmcts.reform.hmc.constants.Constants.WRITE;
 public class MessageSenderToTopicConfiguration {
 
     private final ApplicationParams applicationParams;
+    private ServiceBusSenderClient senderClient;
 
     public MessageSenderToTopicConfiguration(ApplicationParams applicationParams) {
         this.applicationParams = applicationParams;
@@ -32,16 +34,6 @@ public class MessageSenderToTopicConfiguration {
 
     public void sendMessage(String message, String hmctsServiceId, String hearingId, String deploymentId) {
         try {
-            final ServiceBusSenderClient senderClient = new ServiceBusClientBuilder()
-                .connectionString(applicationParams.getExternalConnectionString())
-                .configuration(new ConfigurationBuilder()
-                                   .putProperty(AMQP_CACHE, AMQP_CACHE_VALUE)
-                                   .build())
-                .sender()
-                .topicName(applicationParams.getExternalTopicName())
-                .buildClient();
-
-            log.debug("Connected to Topic {}", applicationParams.getExternalTopicName());
             ServiceBusMessage serviceBusMessage = new ServiceBusMessage(message);
             serviceBusMessage.getApplicationProperties().put(HMCTS_SERVICE_ID, hmctsServiceId);
             serviceBusMessage.getApplicationProperties().put(HEARING_ID, hearingId);
@@ -49,7 +41,7 @@ public class MessageSenderToTopicConfiguration {
                 serviceBusMessage.getApplicationProperties().put(HMCTS_DEPLOYMENT_ID, deploymentId);
             }
             log.debug("Sending request for hmctsServiceCode  :{} , {} , {} ",hmctsServiceId, message, deploymentId);
-            senderClient.sendMessage(serviceBusMessage);
+            getSenderClient().sendMessage(serviceBusMessage);
             log.debug("Message has been sent to the topic {}", applicationParams.getExternalTopicName());
         } catch (Exception e) {
             log.error("Error while sending the message to topic:{}", e.getMessage());
@@ -60,6 +52,27 @@ public class MessageSenderToTopicConfiguration {
                 WRITE,
                 hearingId
             );
+        }
+    }
+
+    private synchronized ServiceBusSenderClient getSenderClient() {
+        if (senderClient == null) {
+            senderClient = new ServiceBusClientBuilder()
+                .connectionString(applicationParams.getExternalConnectionString())
+                .configuration(new ConfigurationBuilder()
+                    .putProperty(AMQP_CACHE, AMQP_CACHE_VALUE)
+                    .build())
+                .sender()
+                .topicName(applicationParams.getExternalTopicName())
+                .buildClient();
+        }
+        return senderClient;
+    }
+
+    @PreDestroy
+    synchronized void closeSenderClient() {
+        if (senderClient != null) {
+            senderClient.close();
         }
     }
 }
