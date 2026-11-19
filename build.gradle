@@ -332,6 +332,9 @@ dependencies {
   // put CVE Vulnerability (sub)dependency overrides here e.g.
   // implementation group: 'com.example', name: 'example-lib', version: '1.0.0' //  parent dependency name
 
+  // Spring Data JPA 3.5.14 contains the fix for CVE-2026-47834.
+  implementation group: 'org.springframework.data', name: 'spring-data-jpa', version: '3.5.14'
+
   // Capped at 6.5.X due to issues with integration tests on 6.6.X
   // persistent instance references an unsaved transient instance
   // @ LinkHearingGroupControllerIT > DeleteLinkedHearingGroup > shouldReturn200_WhenHearingGroupExists()
