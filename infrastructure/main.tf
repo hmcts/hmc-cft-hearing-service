@@ -102,7 +102,7 @@ data "azuread_service_principal" "jenkins_ptl" {
 }
 
 module "postgresql_v15_replica" {
-  source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=DTSPO-30107-additional-postgres-admins"
   count  = var.enable_replica ? 1 : 0
   providers = {
     azurerm.postgres_network = azurerm.postgres_network
@@ -130,5 +130,4 @@ module "postgresql_v15_replica" {
   create_mode         = "Replica"
   source_server_id    = var.primary_server_id
   high_availability   = false
-
 }
