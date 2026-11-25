@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 import uk.gov.hmcts.reform.hmc.data.LinkedHearingStatusAuditEntity;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
+import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,12 +23,15 @@ public class LinkedHearingStatusAuditServiceImpl implements  LinkedHearingStatus
 
     private final LinkedHearingStatusAuditRepository linkedHearingStatusAuditRepository;
     private final ObjectMapperService objectMapperService;
+    private final HearingRepository hearingRepository;
 
     @Autowired
     public LinkedHearingStatusAuditServiceImpl(LinkedHearingStatusAuditRepository linkedHearingStatusAuditRepository,
-                                               ObjectMapperService objectMapperService) {
+                                               ObjectMapperService objectMapperService,
+                                               HearingRepository hearingRepository) {
         this.linkedHearingStatusAuditRepository = linkedHearingStatusAuditRepository;
         this.objectMapperService = objectMapperService;
+        this.hearingRepository = hearingRepository;
     }
 
     @Override
@@ -35,9 +39,11 @@ public class LinkedHearingStatusAuditServiceImpl implements  LinkedHearingStatus
     public void saveLinkedHearingAuditTriageDetails(String source, LinkedGroupDetails linkedGroupDetails,
                                                     String hearingEvent, String httpStatus, String target,
                                                     JsonNode errorDetails, List<HearingEntity> hearingEntities) {
+        List<Long> hearingIds = hearingEntities.stream().map(HearingEntity::getId).toList();
+        List<HearingEntity> hearingsWithRequests = hearingRepository.getHearingsWithCaseHearingRequests(hearingIds);
         LinkedHearingStatusAuditEntity linkedHearingStatusAuditEntity = mapLinkedHearingStatusAuditDetails(source,
                                                                          linkedGroupDetails, hearingEvent, httpStatus,
-                                                                         target, errorDetails, hearingEntities);
+                                                                         target, errorDetails, hearingsWithRequests);
         saveLinkedHearingStatusAudit(linkedHearingStatusAuditEntity);
     }
 
