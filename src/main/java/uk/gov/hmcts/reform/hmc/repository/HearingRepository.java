@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
 
 import java.util.List;
+import java.util.Optional;
 
 @Transactional(propagation = Propagation.REQUIRED)
 @Repository
@@ -24,8 +25,18 @@ public interface HearingRepository extends CrudRepository<HearingEntity, Long> {
     @Query("FROM HearingEntity he WHERE he.linkedGroupDetails.requestId = :requestId")
     List<HearingEntity> findByRequestId(String requestId);
 
+    @Query("SELECT DISTINCT he FROM HearingEntity he LEFT JOIN FETCH he.hearingResponses "
+        + "WHERE he.linkedGroupDetails.requestId = :requestId")
+    List<HearingEntity> findByRequestIdWithHearingResponses(String requestId);
+
     @Query("FROM HearingEntity he WHERE id in :hearingIds")
     List<HearingEntity> getHearings(List<Long> hearingIds);
+
+    @Query("SELECT DISTINCT he FROM HearingEntity he LEFT JOIN FETCH he.caseHearingRequests WHERE he.id IN :hearingIds")
+    List<HearingEntity> getHearingsWithCaseHearingRequests(List<Long> hearingIds);
+
+    @Query("SELECT DISTINCT he FROM HearingEntity he LEFT JOIN FETCH he.hearingResponses WHERE he.id = :hearingId")
+    Optional<HearingEntity> findByIdWithHearingResponses(Long hearingId);
 
     @Modifying
     @Query("UPDATE HearingEntity h "

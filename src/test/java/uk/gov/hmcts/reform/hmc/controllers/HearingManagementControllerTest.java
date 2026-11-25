@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -369,35 +370,53 @@ class HearingManagementControllerTest {
                 .jurisdiction("CMC")
                 .build();
             List<DataStoreCaseDetails> cases = List.of(caseDetails);
-            when(hearingManagementService.getHearings(any(), any()))
-                .thenReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(ccdCaseRefs.getFirst(),
-                                                                             HearingStatus.LISTED.name()));
+            GetHearingsResponse expectedResponse = TestingUtil.getHearingsResponseWhenDataIsPresent(
+                ccdCaseRefs.getFirst(),
+                HearingStatus.LISTED.name()
+            );
+            when(hearingManagementService.getHearingsForCases(Map.of(
+                ccdCaseRefs.getFirst(), HearingStatus.LISTED.name()
+            ))).thenReturn(Map.of(ccdCaseRefs.getFirst(), expectedResponse));
             when(hearingManagementService.getCaseSearchResults(any(), any(), any())).thenReturn(cases);
 
             List<GetHearingsResponse> hearingsResponseList =
                 controller.getHearingsForListOfCases(ccdCaseRefs, null, "AAT_PRIVATE");
-            verify(hearingManagementService).getHearings(any(), any());
+            verify(hearingManagementService).getHearingsForCases(Map.of(
+                ccdCaseRefs.getFirst(), HearingStatus.LISTED.name()
+            ));
             assertThat(hearingsResponseList.getFirst().getCaseRef()).isEqualTo(ccdCaseRefs.getFirst());
             assertThat(hearingsResponseList.getFirst().getCaseHearings().getFirst().getHearingIsLinkedFlag()).isTrue();
         }
 
         @Test
         void shouldReturnHearingResponseForListOfCases() {
-            List<String> ccdCaseRefs  = List.of("9372710950276233", "9856815055686759");
             DataStoreCaseDetails caseDetails = DataStoreCaseDetails.builder()
                 .id("9856815055686759")
                 .jurisdiction("CMC")
                 .build();
             List<DataStoreCaseDetails> cases = List.of(caseDetails);
             when(hearingManagementService.getCaseSearchResults(any(), any(), any())).thenReturn(cases);
+            when(accessControlService.verifyCaseAccess(
+                caseDetails.getId(),
+                List.of(HEARING_VIEWER, LISTED_HEARING_VIEWER),
+                caseDetails
+            )).thenReturn(List.of(HEARING_VIEWER));
             for (DataStoreCaseDetails dataStoreCaseDetails : cases) {
-                when(hearingManagementService.getHearings(any(), any()))
-                    .thenReturn(TestingUtil.getHearingsResponseWhenDataIsPresent(dataStoreCaseDetails.getId(), null));
+                GetHearingsResponse expectedResponse = TestingUtil.getHearingsResponseWhenDataIsPresent(
+                    dataStoreCaseDetails.getId(),
+                    null
+                );
+                when(hearingManagementService.getHearingsForCases(
+                    Collections.singletonMap(dataStoreCaseDetails.getId(), null)
+                ))
+                    .thenReturn(Map.of(dataStoreCaseDetails.getId(), expectedResponse));
             }
-
+            List<String> ccdCaseRefs = List.of("9372710950276233", "9856815055686759");
             List<GetHearingsResponse> hearingsResponseList =
                 controller.getHearingsForListOfCases(ccdCaseRefs, null, "AAT_PRIVATE");
-            verify(hearingManagementService).getHearings(any(), any());
+            verify(hearingManagementService).getHearingsForCases(
+                Collections.singletonMap(ccdCaseRefs.get(1), null)
+            );
             assertThat(hearingsResponseList.getFirst().getCaseRef()).isEqualTo(ccdCaseRefs.get(1));
             assertThat(hearingsResponseList.getFirst().getCaseHearings().getFirst().getHearingIsLinkedFlag()).isTrue();
         }
@@ -456,8 +475,9 @@ class HearingManagementControllerTest {
                 .thenReturn(List.of(ACCESS_ROLE_LISTED_HEARING_VIEWER));
 
             GetHearingsResponse getHearingsResponse = createEmptyGetHearingsResponse();
-            when(hearingManagementService.getHearings(CASE_REFERENCE, HEARING_STATUS_LISTED))
-                .thenReturn(getHearingsResponse);
+            when(hearingManagementService.getHearingsForCases(Map.of(
+                CASE_REFERENCE, HEARING_STATUS_LISTED
+            ))).thenReturn(Map.of(CASE_REFERENCE, getHearingsResponse));
 
             HearingsForListOfCasesPaginatedRequest request = createRequest(caseReferences);
             List<GetHearingsResponse> getHearingsResponseList =
@@ -468,7 +488,9 @@ class HearingManagementControllerTest {
             verify(hearingManagementService)
                 .getCaseSearchResultsPaginated(10, 0, caseReferences, null, CASE_TYPE);
             verify(accessControlService).verifyCaseAccess(CASE_REFERENCE, REQUIRED_ROLES, caseDetails);
-            verify(hearingManagementService).getHearings(CASE_REFERENCE, HEARING_STATUS_LISTED);
+            verify(hearingManagementService).getHearingsForCases(Map.of(
+                CASE_REFERENCE, HEARING_STATUS_LISTED
+            ));
         }
 
         @ParameterizedTest(name = "{index}: Hearing status {0}, Role Assignments {1}, Actual Hearing Status {2}")
@@ -494,8 +516,8 @@ class HearingManagementControllerTest {
                 .thenReturn(roleAssignments);
 
             GetHearingsResponse getHearingsResponse = createGetHearingsResponse();
-            when(hearingManagementService.getHearings(CASE_REFERENCE, actualHearingStatus))
-                .thenReturn(getHearingsResponse);
+            when(hearingManagementService.getHearingsForCases(Map.of(CASE_REFERENCE, actualHearingStatus)))
+                .thenReturn(Map.of(CASE_REFERENCE, getHearingsResponse));
 
             HearingsForListOfCasesPaginatedRequest request = createRequest(caseReferences);
             List<GetHearingsResponse> returnedGetHearingsResponseList =
@@ -519,7 +541,7 @@ class HearingManagementControllerTest {
             verify(hearingManagementService)
                 .getCaseSearchResultsPaginated(10, 0, caseReferences, requestedHearingStatus, CASE_TYPE);
             verify(accessControlService).verifyCaseAccess(CASE_REFERENCE, REQUIRED_ROLES, caseDetails);
-            verify(hearingManagementService).getHearings(CASE_REFERENCE, actualHearingStatus);
+            verify(hearingManagementService).getHearingsForCases(Map.of(CASE_REFERENCE, actualHearingStatus));
         }
 
         @ParameterizedTest(name = "{index}: Hearing Status {0}, Role Assignments {1}")
@@ -542,10 +564,6 @@ class HearingManagementControllerTest {
             when(accessControlService.verifyCaseAccess(CASE_REFERENCE, REQUIRED_ROLES, caseDetails))
                 .thenReturn(roleAssignments);
 
-            GetHearingsResponse emptyGetHearingsResponse = createEmptyGetHearingsResponse();
-            when(hearingManagementService.getEmptyHearingsResponse(CASE_REFERENCE))
-                .thenReturn(emptyGetHearingsResponse);
-
             HearingsForListOfCasesPaginatedRequest request = createRequest(caseReferences);
             List<GetHearingsResponse> response =
                 controller.getHearingsForListOfCasesPaginated(requestedHearingStatus, CASE_TYPE, request);
@@ -555,7 +573,7 @@ class HearingManagementControllerTest {
             verify(hearingManagementService)
                 .getCaseSearchResultsPaginated(10, 0, caseReferences, requestedHearingStatus, CASE_TYPE);
             verify(accessControlService).verifyCaseAccess(CASE_REFERENCE, REQUIRED_ROLES, caseDetails);
-            verify(hearingManagementService).getEmptyHearingsResponse(CASE_REFERENCE);
+            verify(hearingManagementService, never()).getHearingsForCases(any());
         }
 
         private HearingsForListOfCasesPaginatedRequest createRequest(List<String> caseReferences) {

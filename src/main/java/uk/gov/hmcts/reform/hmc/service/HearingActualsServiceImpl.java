@@ -71,6 +71,7 @@ public class HearingActualsServiceImpl implements HearingActualsService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ResponseEntity<HearingActualResponse> getHearingActuals(Long hearingId) {
         hearingIdValidator.validateHearingId(hearingId,HEARING_ID_NOT_FOUND);
         var hearingEntity = hearingRepository.findById(hearingId);

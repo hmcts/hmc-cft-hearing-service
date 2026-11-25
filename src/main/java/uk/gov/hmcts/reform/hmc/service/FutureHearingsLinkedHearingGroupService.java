@@ -72,13 +72,16 @@ public class FutureHearingsLinkedHearingGroupService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void processDeleteHearingRequest(List<HearingEntity> linkedGroupHearings,
                                             LinkedGroupDetails linkedGroupDetails) {
-        verifyAccess(linkedGroupHearings, List.of(HEARING_MANAGER));
-        linkedHearingValidator.validateUnlinkingHearingsStatus(linkedGroupHearings);
-        linkedHearingValidator.validateUnlinkingHearingsWillNotHaveStartDateInThePast(linkedGroupHearings);
+        List<Long> hearingIds = linkedGroupHearings.stream().map(HearingEntity::getId).toList();
+        List<HearingEntity> hearingsInTransaction = hearingRepository.getHearings(hearingIds);
+
+        verifyAccess(hearingsInTransaction, List.of(HEARING_MANAGER));
+        linkedHearingValidator.validateUnlinkingHearingsStatus(hearingsInTransaction);
+        linkedHearingValidator.validateUnlinkingHearingsWillNotHaveStartDateInThePast(hearingsInTransaction);
 
         saveLinkedGroupDetailsAudit(linkedGroupDetails);
-        linkedGroupHearings.forEach(hearingEntity ->
-                                        saveLinkedHearingDetailsAudit(hearingEntity, linkedGroupDetails));
+        hearingsInTransaction.forEach(hearingEntity ->
+                                          saveLinkedHearingDetailsAudit(hearingEntity, linkedGroupDetails));
         saveLinkedGroupDetails(linkedGroupDetails);
     }
 

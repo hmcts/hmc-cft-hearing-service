@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.hmc.data.HearingEntity;
 import uk.gov.hmcts.reform.hmc.data.LinkedGroupDetails;
+import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.LinkedHearingStatusAuditRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
 
@@ -35,11 +36,15 @@ class LinkedHearingStatusAuditServiceTest {
     @Mock
     LinkedHearingStatusAuditRepository linkedHearingStatusAuditRepository;
 
+    @Mock
+    HearingRepository hearingRepository;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         linkedHearingStatusAuditService =
-            new LinkedHearingStatusAuditServiceImpl(linkedHearingStatusAuditRepository, objectMapperService);
+            new LinkedHearingStatusAuditServiceImpl(linkedHearingStatusAuditRepository,
+                                                    objectMapperService, hearingRepository);
     }
 
     @Nested
@@ -48,6 +53,7 @@ class LinkedHearingStatusAuditServiceTest {
         void shouldSaveLinkedAuditTriageDetailsWhenFailure() {
             LinkedGroupDetails linkedGroupDetails =  TestingUtil.linkedGroupDetailsEntity();
             List<HearingEntity> hearingEntities = List.of(TestingUtil.hearingEntityWithLinkDetails());
+            given(hearingRepository.getHearingsWithCaseHearingRequests(any())).willReturn(hearingEntities);
             JsonNode errorDetails = objectMapperService.convertObjectToJsonNode("005 rejected by List Assist");
             given(linkedHearingStatusAuditRepository.save(TestingUtil.linkedHearingStatusAuditEntity())).willReturn(
                 TestingUtil.linkedHearingStatusAuditEntity());
@@ -62,6 +68,7 @@ class LinkedHearingStatusAuditServiceTest {
         void shouldSaveAuditTriageDetailsWhenSuccess() {
             LinkedGroupDetails linkedGroupDetails =  TestingUtil.linkedGroupDetailsEntity();
             List<HearingEntity> hearingEntities = List.of(TestingUtil.hearingEntityWithLinkDetails());
+            given(hearingRepository.getHearingsWithCaseHearingRequests(any())).willReturn(hearingEntities);
             given(linkedHearingStatusAuditRepository.save(TestingUtil.linkedHearingStatusAuditEntity())).willReturn(
                 TestingUtil.linkedHearingStatusAuditEntity());
             linkedHearingStatusAuditService.saveLinkedHearingAuditTriageDetails(HMC,linkedGroupDetails,

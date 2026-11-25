@@ -265,7 +265,8 @@ class LinkHearingGroupServiceTest {
             );
 
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(2000000000L))
+                .thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 service.linkHearing(hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
@@ -316,6 +317,8 @@ class LinkHearingGroupServiceTest {
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
                                                              LinkType.ORDERED.label, "reason"
@@ -363,6 +366,8 @@ class LinkHearingGroupServiceTest {
 
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(2000000000L))
+                .thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 service.linkHearing(hearingLinkGroupRequest,CLIENT_S2S_TOKEN);
@@ -418,6 +423,8 @@ class LinkHearingGroupServiceTest {
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 service.linkHearing(hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
@@ -452,6 +459,8 @@ class LinkHearingGroupServiceTest {
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 service.linkHearing(hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
@@ -487,6 +496,8 @@ class LinkHearingGroupServiceTest {
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 service.linkHearing(hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
@@ -521,6 +532,8 @@ class LinkHearingGroupServiceTest {
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 service.linkHearing(hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
@@ -543,9 +556,13 @@ class LinkHearingGroupServiceTest {
 
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(2000000000L))
+                .thenReturn(Optional.of(hearingEntity));
 
             when(hearingRepository.existsById(2000000002L)).thenReturn(true);
             when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(2000000002L))
+                .thenReturn(Optional.of(hearingEntity));
 
             given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
             when(linkedGroupDetailsRepository.existsById(1L)).thenReturn(true);
@@ -571,9 +588,9 @@ class LinkHearingGroupServiceTest {
             );
             service.linkHearing(hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             verify(hearingRepository, times(2)).existsById(2000000000L);
-            verify(hearingRepository, times(2)).findById(2000000000L);
+            verify(hearingRepository).findById(2000000000L);
             verify(hearingRepository, times(2)).existsById(2000000002L);
-            verify(hearingRepository, times(2)).findById(2000000002L);
+            verify(hearingRepository).findById(2000000002L);
             verify(hearingRepository).updateLinkedGroupDetailsAndOrder(eq(2000000000L), any(), eq(1L));
             verify(hearingRepository).updateLinkedGroupDetailsAndOrder(eq(2000000002L), any(), eq(1L));
             verify(linkedGroupDetailsRepository, times(2)).save(any());
@@ -596,9 +613,13 @@ class LinkHearingGroupServiceTest {
             hearingEntity.setLinkedOrder(null);
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(2000000000L))
+                .thenReturn(Optional.of(hearingEntity));
 
             when(hearingRepository.existsById(2000000002L)).thenReturn(true);
             when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(2000000002L))
+                .thenReturn(Optional.of(hearingEntity));
 
             given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
             when(linkedGroupDetailsRepository.existsById(1L)).thenReturn(true);
@@ -624,9 +645,9 @@ class LinkHearingGroupServiceTest {
             );
             service.linkHearing(hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             verify(hearingRepository, times(2)).existsById(2000000000L);
-            verify(hearingRepository, times(2)).findById(2000000000L);
+            verify(hearingRepository).findById(2000000000L);
             verify(hearingRepository, times(2)).existsById(2000000002L);
-            verify(hearingRepository, times(2)).findById(2000000002L);
+            verify(hearingRepository).findById(2000000002L);
             verify(hearingRepository).updateLinkedGroupDetailsAndOrder(eq(2000000000L), any(), isNull());
             verify(hearingRepository).updateLinkedGroupDetailsAndOrder(eq(2000000002L), any(), isNull());
             verify(linkedGroupDetailsRepository, times(2)).save(any());
@@ -648,8 +669,12 @@ class LinkHearingGroupServiceTest {
             );
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             given(linkedGroupDetailsRepository.save(any())).willReturn(TestingUtil.linkedGroupDetailsEntity());
             when(linkedGroupDetailsRepository.existsById(1L)).thenReturn(true);
@@ -676,9 +701,9 @@ class LinkHearingGroupServiceTest {
             logger.info("hearingLinkGroupRequest : {}", hearingLinkGroupRequest);
             service.linkHearing(hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             verify(hearingRepository, times(2)).existsById(2000000000L);
-            verify(hearingRepository, times(2)).findById(2000000000L);
+            verify(hearingRepository).findById(2000000000L);
             verify(hearingRepository, times(2)).existsById(2000000002L);
-            verify(hearingRepository, times(2)).findById(2000000002L);
+            verify(hearingRepository).findById(2000000002L);
             verify(hearingRepository).updateLinkedGroupDetailsAndOrder(eq(2000000000L), any(), eq(1L));
             verify(hearingRepository).updateLinkedGroupDetailsAndOrder(eq(2000000002L), any(), eq(2L));
             verify(linkedGroupDetailsRepository, times(2)).save(any());
@@ -701,9 +726,13 @@ class LinkHearingGroupServiceTest {
 
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(2000000000L))
+                .thenReturn(Optional.of(hearingEntity));
 
             when(hearingRepository.existsById(2000000002L)).thenReturn(true);
             when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(2000000002L))
+                .thenReturn(Optional.of(hearingEntity));
 
             LinkedGroupDetails linkedGroupDetails = generateLinkGroupDetails(1L,
                                                                              "1",
@@ -745,8 +774,8 @@ class LinkHearingGroupServiceTest {
                 service.linkHearing(hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             });
             assertTrue(exception.getMessage().contains(REJECTED_BY_LIST_ASSIST));
-            verify(hearingRepository, times(2)).findById(2000000000L);
-            verify(hearingRepository, times(2)).findById(2000000002L);
+            verify(hearingRepository).findById(2000000000L);
+            verify(hearingRepository).findById(2000000002L);
             verify(hearingRepository, times(3)).existsById(2000000000L);
             verify(hearingRepository, times(3)).existsById(2000000002L);
             verify(hearingRepository).updateLinkedGroupDetailsAndOrder(2000000000L, linkedGroupDetails, 1L);
@@ -777,9 +806,13 @@ class LinkHearingGroupServiceTest {
 
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(2000000000L))
+                .thenReturn(Optional.of(hearingEntity));
 
             when(hearingRepository.existsById(2000000002L)).thenReturn(true);
             when(hearingRepository.findById(2000000002L)).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(2000000002L))
+                .thenReturn(Optional.of(hearingEntity));
 
             LinkedGroupDetails linkedGroupDetails = generateLinkGroupDetails(1L,
                                                                              "1",
@@ -819,8 +852,8 @@ class LinkHearingGroupServiceTest {
                 service.linkHearing(hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             });
             assertTrue(exception.getMessage().contains(LIST_ASSIST_FAILED_TO_RESPOND));
-            verify(hearingRepository, times(2)).findById(2000000000L);
-            verify(hearingRepository, times(2)).findById(2000000002L);
+            verify(hearingRepository).findById(2000000000L);
+            verify(hearingRepository).findById(2000000002L);
             verify(hearingRepository, times(3)).existsById(2000000000L);
             verify(hearingRepository, times(3)).existsById(2000000002L);
             verify(hearingRepository)
@@ -920,7 +953,8 @@ class LinkHearingGroupServiceTest {
 
             when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(1L);
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-            when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(2000000000L))
+                .thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 service.updateLinkHearing("1", hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
@@ -973,6 +1007,8 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(1L);
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
                                                              LinkType.ORDERED.label, "reason"
@@ -1023,6 +1059,8 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(1L);
             when(hearingRepository.existsById(2000000000L)).thenReturn(true);
             when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(2000000000L))
+                .thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 service.updateLinkHearing("1", hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
@@ -1078,6 +1116,10 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(1L);
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 service.updateLinkHearing("1", hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
@@ -1113,6 +1155,8 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(1L);
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 service.updateLinkHearing("1", hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
@@ -1149,6 +1193,8 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(1L);
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 service.updateLinkHearing("1", hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
@@ -1184,6 +1230,8 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(1L);
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () -> {
                 service.updateLinkHearing("1", hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
@@ -1211,6 +1259,8 @@ class LinkHearingGroupServiceTest {
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
@@ -1239,9 +1289,9 @@ class LinkHearingGroupServiceTest {
             );
             service.updateLinkHearing("1", hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             verify(hearingRepository, times(2)).existsById(2000000000L);
-            verify(hearingRepository, times(3)).findById(2000000000L);
+            verify(hearingRepository, times(2)).findById(2000000000L);
             verify(hearingRepository, times(2)).existsById(2000000002L);
-            verify(hearingRepository, times(3)).findById(2000000002L);
+            verify(hearingRepository, times(2)).findById(2000000002L);
             verify(hearingRepository).updateLinkedGroupDetailsAndOrder(2000000000L, linkedGroupDetails, 1L);
             verify(hearingRepository).updateLinkedGroupDetailsAndOrder(2000000002L, linkedGroupDetails, 1L);
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(any());
@@ -1270,6 +1320,8 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(1L);
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             LinkedGroupDetails linkedGroupDetails = generateLinkGroupDetails(
                 1L,
@@ -1298,9 +1350,9 @@ class LinkHearingGroupServiceTest {
             logger.info("hearingLinkGroupRequest : {}", hearingLinkGroupRequest);
             service.updateLinkHearing("1", hearingLinkGroupRequest, CLIENT_S2S_TOKEN);
             verify(hearingRepository, times(2)).existsById(2000000000L);
-            verify(hearingRepository, times(3)).findById(2000000000L);
+            verify(hearingRepository, times(2)).findById(2000000000L);
             verify(hearingRepository, times(2)).existsById(2000000002L);
-            verify(hearingRepository, times(3)).findById(2000000002L);
+            verify(hearingRepository, times(2)).findById(2000000002L);
             verify(hearingRepository).updateLinkedGroupDetailsAndOrder(2000000000L, linkedGroupDetails, 1L);
             verify(hearingRepository).updateLinkedGroupDetailsAndOrder(2000000002L, linkedGroupDetails, 2L);
             verify(linkedGroupDetailsRepository, times(1)).isFoundForRequestId(any());
@@ -1329,6 +1381,8 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(1L);
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             LinkedGroupDetails linkedGroupDetails = generateLinkGroupDetails(
                 1L,
@@ -1391,6 +1445,8 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(1L);
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             LinkedGroupDetails linkedGroupDetails = generateLinkGroupDetails(
                 1L,
@@ -1435,6 +1491,10 @@ class LinkHearingGroupServiceTest {
     @DisplayName("deleteHearingGroup")
     class DeleteHearingGroup {
 
+        private void stubHearingsReloadedInDeleteTransaction(List<HearingEntity> hearingEntities) {
+            given(hearingRepository.getHearings(any())).willReturn(hearingEntities);
+        }
+
         @Test
         void shouldDeleteHearingGroupDetails() {
             LinkedGroupDetails groupDetails = createGroupDetailsEntity(HEARING_GROUP_ID, "ACTIVE");
@@ -1466,10 +1526,11 @@ class LinkHearingGroupServiceTest {
                                                            List.of(START_DATE_TIME_IN_THE_FUTURE)
                 )));
 
-            LinkedGroupDetailsAudit groupDetailsAudit = createGroupDetailsAuditEntity("ACTIVE", groupDetails);
             when(linkedGroupDetailsRepository.isFoundForRequestId(any())).thenReturn(HEARING_GROUP_ID);
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID)).willReturn(List.of(hearing1, hearing2));
+            stubHearingsReloadedInDeleteTransaction(List.of(hearing1, hearing2));
+            LinkedGroupDetailsAudit groupDetailsAudit = createGroupDetailsAuditEntity("ACTIVE", groupDetails);
             given(linkedGroupDetailsAuditMapper.modelToEntity(groupDetails))
                 .willReturn(groupDetailsAudit);
             given(hearingRepository.existsById(HEARING_ID1))
@@ -1578,6 +1639,7 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing1, hearing2));
+            stubHearingsReloadedInDeleteTransaction(List.of(hearing1, hearing2));
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             Exception exception = assertThrows(BadRequestException.class, () ->
                 service.deleteLinkedHearingGroup(REQUEST_ID, CLIENT_S2S_TOKEN));
@@ -1613,6 +1675,7 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing));
+            stubHearingsReloadedInDeleteTransaction(List.of(hearing));
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             Exception exception = assertThrows(BadRequestException.class, () ->
                 service.deleteLinkedHearingGroup(REQUEST_ID, CLIENT_S2S_TOKEN));
@@ -1647,6 +1710,7 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing));
+            stubHearingsReloadedInDeleteTransaction(List.of(hearing));
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             Exception exception = assertThrows(BadRequestException.class, () ->
                 service.deleteLinkedHearingGroup(REQUEST_ID, CLIENT_S2S_TOKEN));
@@ -1697,6 +1761,7 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing1, hearing2));
+            stubHearingsReloadedInDeleteTransaction(List.of(hearing1, hearing2));
             given(hearingRepository.existsById(HEARING_ID1))
                 .willReturn(true);
             given(hearingRepository.existsById(HEARING_ID2))
@@ -1742,6 +1807,7 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing));
+            stubHearingsReloadedInDeleteTransaction(List.of(hearing));
             given(hearingRepository.existsById(HEARING_ID1))
                 .willReturn(true);
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
@@ -1783,6 +1849,7 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing));
+            stubHearingsReloadedInDeleteTransaction(List.of(hearing));
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             listAssistThrows4xxError();
             Exception exception = assertThrows(BadRequestException.class, () ->
@@ -1822,6 +1889,7 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository.getLinkedGroupDetailsByRequestId(any())).thenReturn(groupDetails);
             given(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID))
                 .willReturn(List.of(hearing));
+            stubHearingsReloadedInDeleteTransaction(List.of(hearing));
             given(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).willReturn(Optional.of(groupDetails));
             final HearingManagementInterfaceResponse response = getHearingResponseFromListAssist(
                 500, "006 List Assist failed to respond");
@@ -1869,6 +1937,7 @@ class LinkHearingGroupServiceTest {
             when(linkedGroupDetailsRepository
                      .getLinkedGroupDetailsByRequestId(REQUEST_ID)).thenReturn(linkedGroupDetails);
             when(hearingRepository.findByLinkedGroupId(HEARING_GROUP_ID)).thenReturn(linkedGroupHearings);
+            stubHearingsReloadedInDeleteTransaction(linkedGroupHearings);
             when(linkedGroupDetailsRepository.findById(HEARING_GROUP_ID)).thenReturn(Optional.of(linkedGroupDetails));
             when(linkedGroupDetailsAuditMapper.modelToEntity(linkedGroupDetails)).thenReturn(linkedGroupDetailsAudit);
             when(linkedHearingDetailsAuditMapper.modelToEntity(hearing, linkedGroupDetails))

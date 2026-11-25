@@ -106,7 +106,7 @@ public class LinkedHearingValidator {
                                                          List<LinkHearingDetails> linkHearingDetailsListPayload) {
         // get existing data linkedHearingDetails
         List<HearingEntity> linkedHearingDetailsListExisting
-                = hearingRepository.findByRequestId(requestId);
+                = hearingRepository.findByRequestIdWithHearingResponses(requestId);
 
         // get obsolete linkedHearingDetails
         List<HearingEntity> linkedHearingDetailsListObsolete =
@@ -174,7 +174,8 @@ public class LinkedHearingValidator {
             checkSufficientRequestIds(hearingLinkGroupRequest, details);
             log.debug("hearingId: {}", details.getHearingId());
             hearingIdValidator.validateHearingId(Long.valueOf(details.getHearingId()), HEARING_ID_NOT_FOUND);
-            Optional<HearingEntity> hearingEntity = hearingRepository.findById(Long.valueOf(details.getHearingId()));
+            Optional<HearingEntity> hearingEntity = hearingRepository
+                .findByIdWithHearingResponses(Long.valueOf(details.getHearingId()));
             if (hearingEntity.isPresent()) {
                 checkHearingRequestAllowsLinking(hearingEntity);
                 checkHearingRequestIsNotInAnotherGroup(details, requestId);

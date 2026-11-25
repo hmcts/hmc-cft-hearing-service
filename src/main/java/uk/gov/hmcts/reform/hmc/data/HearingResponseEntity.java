@@ -20,8 +20,7 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.BatchSize;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -41,9 +40,9 @@ public class HearingResponseEntity extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -3354306831150920356L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, 
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
         generator = "hearing_response_id_seq_generator")
-    @SequenceGenerator(name = "hearing_response_id_seq_generator", 
+    @SequenceGenerator(name = "hearing_response_id_seq_generator",
         sequenceName = "hearing_response_id_seq", allocationSize = 1)
     @Column(name = "hearing_response_id")
     private Long hearingResponseId;
@@ -64,8 +63,8 @@ public class HearingResponseEntity extends BaseEntity implements Serializable {
     @JoinColumn(name = "hearing_id")
     private HearingEntity hearing;
 
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "hearingResponse", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @LazyCollection(LazyCollectionOption.FALSE)
     @JsonSerialize
     private List<HearingDayDetailsEntity> hearingDayDetails;
 

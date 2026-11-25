@@ -98,7 +98,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -1577,6 +1579,88 @@ class HearingManagementServiceTest {
     @Nested
     @DisplayName("getHearings")
     class GetHearings {
+
+        @Test
+        void getHearingsForCases_shouldFetchHearingsForCasesWithAndWithoutStatusAndReturnInInputOrder() {
+            String caseRefNoStatus = "case-ref-with-no-status";
+            String caseRefWithStatusListed = "case-ref-with-status-listed";
+            String caseRefWithStatusRequested = "case-ref-with-status-requested";
+
+            Map<String, String> statusByCaseReference = new LinkedHashMap<>();
+            statusByCaseReference.put(caseRefNoStatus, null);
+            statusByCaseReference.put(caseRefWithStatusListed, LISTED.name());
+            statusByCaseReference.put(caseRefWithStatusRequested, HEARING_REQUESTED.name());
+
+            CaseHearingRequestEntity hearingRequestForCaseWithNoStatus = new CaseHearingRequestEntity();
+            hearingRequestForCaseWithNoStatus.setCaseReference(caseRefNoStatus);
+            CaseHearingRequestEntity hearingRequestForCaseWithListedStatus = new CaseHearingRequestEntity();
+            hearingRequestForCaseWithListedStatus.setCaseReference(caseRefWithStatusListed);
+            CaseHearingRequestEntity hearingRequestForCaseWithRequestedStatus = new CaseHearingRequestEntity();
+            hearingRequestForCaseWithRequestedStatus.setCaseReference(caseRefWithStatusRequested);
+
+            when(caseHearingRequestRepository.getHearingDetailsForCases(List.of(caseRefNoStatus)))
+                .thenReturn(List.of(hearingRequestForCaseWithNoStatus));
+            when(caseHearingRequestRepository.getHearingDetailsForCasesWithStatus(
+                List.of(caseRefWithStatusListed), LISTED.name())
+            ).thenReturn(List.of(hearingRequestForCaseWithListedStatus));
+            when(caseHearingRequestRepository.getHearingDetailsForCasesWithStatus(
+                List.of(caseRefWithStatusRequested), HEARING_REQUESTED.name())
+            ).thenReturn(List.of(hearingRequestForCaseWithRequestedStatus));
+
+            GetHearingsResponse responseForCaseWithNoStatus = mock(GetHearingsResponse.class);
+            GetHearingsResponse responseForCaseWithListedStatus = mock(GetHearingsResponse.class);
+            GetHearingsResponse responseForCaseWithRequestedStatus = mock(GetHearingsResponse.class);
+
+            when(getHearingsResponseMapper.toHearingsResponse(
+                caseRefNoStatus, List.of(hearingRequestForCaseWithNoStatus))
+            ).thenReturn(responseForCaseWithNoStatus);
+            when(getHearingsResponseMapper.toHearingsResponse(
+                caseRefWithStatusListed, List.of(hearingRequestForCaseWithListedStatus))
+            ).thenReturn(responseForCaseWithListedStatus);
+            when(getHearingsResponseMapper.toHearingsResponse(
+                caseRefWithStatusRequested, List.of(hearingRequestForCaseWithRequestedStatus))
+            ).thenReturn(responseForCaseWithRequestedStatus);
+
+            Map<String, GetHearingsResponse> responses =
+                hearingManagementService.getHearingsForCases(statusByCaseReference);
+
+            assertEquals(
+                List.of(caseRefNoStatus, caseRefWithStatusListed, caseRefWithStatusRequested),
+                List.copyOf(responses.keySet())
+            );
+
+            assertEquals(responseForCaseWithNoStatus, responses.get(caseRefNoStatus));
+            assertEquals(responseForCaseWithListedStatus, responses.get(caseRefWithStatusListed));
+            assertEquals(responseForCaseWithRequestedStatus, responses.get(caseRefWithStatusRequested));
+
+            verify(caseHearingRequestRepository).getHearingDetailsForCases(List.of(caseRefNoStatus));
+            verify(caseHearingRequestRepository).getHearingDetailsForCasesWithStatus(
+                List.of(caseRefWithStatusListed), LISTED.name());
+            verify(caseHearingRequestRepository).getHearingDetailsForCasesWithStatus(
+                List.of(caseRefWithStatusRequested), HEARING_REQUESTED.name());
+        }
+
+        @Test
+        void getHearingsForCases_shouldReturnEmptyResponsesForCasesWithoutHearings() {
+            Map<String, String> statusByCaseReference = Map.of("case-1", LISTED.name());
+            when(caseHearingRequestRepository.getHearingDetailsForCasesWithStatus(List.of("case-1"), LISTED.name()))
+                .thenReturn(Collections.emptyList());
+            GetHearingsResponse emptyResponse = mock(GetHearingsResponse.class);
+            when(getHearingsResponseMapper.toHearingsResponse("case-1", Collections.emptyList()))
+                .thenReturn(emptyResponse);
+
+            Map<String, GetHearingsResponse> responses =
+                hearingManagementService.getHearingsForCases(statusByCaseReference);
+
+            assertEquals(Map.of("case-1", emptyResponse), responses);
+        }
+
+        @Test
+        void getHearingsForCases_shouldSkipRepositoryQueriesForEmptyInput() {
+            assertTrue(hearingManagementService.getHearingsForCases(Collections.emptyMap()).isEmpty());
+            verify(caseHearingRequestRepository, never()).getHearingDetailsForCases(any());
+            verify(caseHearingRequestRepository, never()).getHearingDetailsForCasesWithStatus(any(), any());
+        }
 
         @Test
         void getHearings_shouldReturnDataWithValidDetails() {

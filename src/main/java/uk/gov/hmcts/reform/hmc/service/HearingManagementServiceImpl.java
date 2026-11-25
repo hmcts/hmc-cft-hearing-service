@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmc.service;
 
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.CaseSearchResult;
 import uk.gov.hmcts.reform.hmc.client.datastore.model.DataStoreCaseDetails;
@@ -63,10 +63,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
@@ -170,6 +174,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ResponseEntity<GetHearingResponse> getHearingRequest(Long hearingId, boolean isValid) {
         hearingIdValidator.isValidFormat(hearingId.toString());
         if (!hearingRepository.existsById(hearingId)) {
@@ -313,6 +318,7 @@ public class HearingManagementServiceImpl implements HearingManagementService {
      * @return HearingRequest HearingRequest
      */
     @Override
+    @Transactional(readOnly = true)
     public GetHearingsResponse getHearings(String caseRef, String status) {
         log.debug("caseRef:{} ; status:{}", caseRef, status);
         List<CaseHearingRequestEntity> entities;
@@ -325,11 +331,59 @@ public class HearingManagementServiceImpl implements HearingManagementService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Map<String, GetHearingsResponse> getHearingsForCases(Map<String, String> statusByCaseReference) {
+        List<CaseHearingRequestEntity> hearingRequestEntitiesForAllCases = new ArrayList<>();
+        List<String> caseReferencesWithoutStatus = new ArrayList<>();
+        Map<String, List<String>> caseReferencesByStatus = new HashMap<>();
+
+        statusByCaseReference.forEach((caseReference, status) -> {
+            if (isBlank(status)) {
+                caseReferencesWithoutStatus.add(caseReference);
+            } else {
+                caseReferencesByStatus.computeIfAbsent(status, ignored -> new ArrayList<>()).add(caseReference);
+            }
+        });
+
+        if (!caseReferencesWithoutStatus.isEmpty()) {
+            hearingRequestEntitiesForAllCases.addAll(
+                caseHearingRequestRepository.getHearingDetailsForCases(caseReferencesWithoutStatus)
+            );
+        }
+
+        caseReferencesByStatus.forEach((status, caseReferences) ->
+                                       hearingRequestEntitiesForAllCases.addAll(
+                                           caseHearingRequestRepository.getHearingDetailsForCasesWithStatus(
+                                               caseReferences,
+                                               status
+                                           )
+                                       )
+        );
+
+        Map<String, List<CaseHearingRequestEntity>> hearingRequestEntitiesByCaseReference =
+            hearingRequestEntitiesForAllCases.stream()
+                .collect(Collectors.groupingBy(CaseHearingRequestEntity::getCaseReference));
+
+        Map<String, GetHearingsResponse> responses = new LinkedHashMap<>();
+        statusByCaseReference.keySet().forEach(caseReference -> {
+            List<CaseHearingRequestEntity> hearingRequestEntities =
+                hearingRequestEntitiesByCaseReference.getOrDefault(caseReference, List.of());
+
+            responses.put(
+                caseReference, getHearingsResponseMapper.toHearingsResponse(caseReference, hearingRequestEntities)
+            );
+        });
+
+        return responses;
+    }
+
+    @Override
     public GetHearingsResponse getEmptyHearingsResponse(String caseRef) {
         return getHearingsResponseMapper.toHearingsResponse(caseRef, Collections.emptyList());
     }
 
     @Override
+    @Transactional
     public ResponseEntity hearingCompletion(Long hearingId, String clientS2SToken) {
         hearingIdValidator.validateHearingId(hearingId, HEARING_ACTUALS_ID_NOT_FOUND);
         HearingEntity existingHearing = hearingRepository.findById(hearingId)
