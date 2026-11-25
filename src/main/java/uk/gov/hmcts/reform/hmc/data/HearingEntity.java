@@ -17,8 +17,7 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.BatchSize;
 import uk.gov.hmcts.reform.hmc.domain.model.enums.HearingStatus;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.hmc.exceptions.ResourceNotFoundException;
@@ -67,11 +66,12 @@ public class HearingEntity extends BaseEntity implements Serializable {
     @Column(name = "updated_date_time")
     private LocalDateTime updatedDateTime;
 
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "hearing", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @LazyCollection(LazyCollectionOption.FALSE)
     private List<CaseHearingRequestEntity> caseHearingRequests = new ArrayList<>();
 
-    @OneToMany(mappedBy = "hearing", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @BatchSize(size = 50)
+    @OneToMany(mappedBy = "hearing", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<HearingResponseEntity> hearingResponses;
 
     @ManyToOne(fetch = FetchType.LAZY)

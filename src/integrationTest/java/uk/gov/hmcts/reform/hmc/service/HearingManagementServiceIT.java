@@ -100,6 +100,18 @@ class HearingManagementServiceIT extends BaseTest {
     }
 
     @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void getHearingRequest_shouldMapLazyHearingResponseAfterRepositoryLookup() {
+        ResponseEntity<uk.gov.hmcts.reform.hmc.model.GetHearingResponse> response =
+            hearingManagementService.getHearingRequest(2000000000L, false);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertNotNull(response.getBody().getHearingResponse());
+        assertEquals("DRAFT", response.getBody().getHearingResponse().getListingStatus());
+    }
+
+    @Test
     @Sql(DELETE_HEARING_DATA_SCRIPT)
     void testValidateHearingRequest_WithOutIndividualOrOrgDetails() {
         HearingRequest createHearingRequest = new HearingRequest();

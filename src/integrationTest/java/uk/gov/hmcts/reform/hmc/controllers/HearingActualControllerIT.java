@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResponse;
 import uk.gov.hmcts.reform.hmc.exceptions.ValidationError;
 import uk.gov.hmcts.reform.hmc.interceptors.OverrideHostPolicy;
+import uk.gov.hmcts.reform.hmc.service.HearingActualsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -54,6 +57,9 @@ class HearingActualControllerIT extends BaseTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private HearingActualsService hearingActualsService;
+
     @MockitoBean
     protected OverrideHostPolicy overrideHostPolicy;
 
@@ -65,6 +71,16 @@ class HearingActualControllerIT extends BaseTest {
     @Nested
     @DisplayName("Get Hearing Actuals")
     class GetHearingActuals {
+
+        @Test
+        @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+        void serviceShouldMapLazyHearingResponseAfterRepositoryLookup() {
+            var response = hearingActualsService.getHearingActuals(2000000000L);
+
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertNotNull(response.getBody());
+            assertNotNull(response.getBody().getCaseDetails());
+        }
 
         @BeforeEach
         void setUp() {

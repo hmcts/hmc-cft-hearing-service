@@ -42,7 +42,9 @@ import uk.gov.hmcts.reform.hmc.service.AccessControlService;
 import uk.gov.hmcts.reform.hmc.service.HearingManagementService;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
@@ -222,16 +224,9 @@ public class HearingManagementController {
     public List<GetHearingsResponse> getHearingsForListOfCases(@RequestParam @NotEmpty List<String> ccdCaseRefs,
                                                                @RequestParam(required = false) String status,
                                                                @RequestParam @NotBlank String caseTypeId) {
-        List<GetHearingsResponse> hearingsResponseList = new ArrayList<>();
         List<DataStoreCaseDetails> cases = hearingManagementService.getCaseSearchResults(ccdCaseRefs, status,
                                                                                           caseTypeId);
-        for (DataStoreCaseDetails caseDetails : cases) {
-            GetHearingsResponse hearingsResponse = getHearingsResponse(caseDetails.getId(), status, caseDetails);
-            if (hearingsResponse.getCaseHearings().size() != 0) {
-                hearingsResponseList.add(hearingsResponse);
-            }
-        }
-        return hearingsResponseList.isEmpty() ? null : hearingsResponseList;
+        return getHearingsForCases(cases, status);
     }
 
     @PostMapping(path = "/hearings", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -253,7 +248,6 @@ public class HearingManagementController {
         @RequestParam(required = false) String status,
         @RequestParam @NotBlank String caseTypeId,
         @RequestBody @Valid HearingsForListOfCasesPaginatedRequest hearingsForListOfCasesPaginatedRequest) {
-        List<GetHearingsResponse> hearingsResponseList = new ArrayList<>();
 
         List<String> caseReferences = getCaseReferences(hearingsForListOfCasesPaginatedRequest.getCaseReferences());
         List<DataStoreCaseDetails> cases =
@@ -264,14 +258,52 @@ public class HearingManagementController {
                 status,
                 caseTypeId);
 
+        return getHearingsForCases(cases, status);
+    }
+
+    private List<GetHearingsResponse> getHearingsForCases(
+        List<DataStoreCaseDetails> cases,
+        String requestedStatus
+    ) {
+        Map<String, String> statusByCaseReference = new LinkedHashMap<>();
+
         for (DataStoreCaseDetails caseDetails : cases) {
-            GetHearingsResponse hearingsResponse = getHearingsResponse(caseDetails.getId(), status, caseDetails);
-            if (!hearingsResponse.getCaseHearings().isEmpty()) {
-                hearingsResponseList.add(hearingsResponse);
+            String caseReference = caseDetails.getId();
+
+            List<String> filteredRoleAssignments = accessControlService.verifyCaseAccess(
+                caseReference,
+                List.of(HEARING_VIEWER, LISTED_HEARING_VIEWER),
+                caseDetails
+            );
+
+            if (hasOnlyListedHearingViewerRoles(filteredRoleAssignments)) {
+                if (requestedStatus != null
+                    && !HearingStatus.LISTED.name().equals(requestedStatus)) {
+                    continue;
+                }
+
+                statusByCaseReference.put(caseReference, HearingStatus.LISTED.name());
+            } else {
+                statusByCaseReference.put(caseReference, requestedStatus);
             }
         }
 
-        return hearingsResponseList.isEmpty() ? null : hearingsResponseList;
+        if (statusByCaseReference.isEmpty()) {
+            return null;
+        }
+
+        Map<String, GetHearingsResponse> responses =
+            hearingManagementService.getHearingsForCases(statusByCaseReference);
+
+        List<GetHearingsResponse> result = new ArrayList<>();
+        for (DataStoreCaseDetails caseDetails : cases) {
+            GetHearingsResponse response = responses.get(caseDetails.getId());
+            if (response != null && !response.getCaseHearings().isEmpty()) {
+                result.add(response);
+            }
+        }
+
+        return result.isEmpty() ? null : result;
     }
 
     private GetHearingsResponse getHearingsResponse(String ccdCaseRef, String status,

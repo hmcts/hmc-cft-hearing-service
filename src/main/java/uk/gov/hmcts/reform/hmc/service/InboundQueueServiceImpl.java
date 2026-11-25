@@ -83,6 +83,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
     }
 
     @Override
+    @Transactional
     public void processMessage(JsonNode message,
                                ServiceBusReceivedMessageContext messageContext)
         throws JsonProcessingException {
@@ -99,6 +100,7 @@ public class InboundQueueServiceImpl implements InboundQueueService {
     }
 
     @Override
+    @Transactional
     public void catchExceptionAndUpdateHearing(Map<String, Object> applicationProperties, Exception exception) {
         if (applicationProperties.containsKey(HEARING_ID)) {
             Long hearingId = Long.valueOf(applicationProperties.get(HEARING_ID).toString());

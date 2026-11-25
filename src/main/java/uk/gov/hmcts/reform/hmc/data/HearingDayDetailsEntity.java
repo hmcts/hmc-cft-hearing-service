@@ -16,8 +16,7 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.BatchSize;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -37,9 +36,9 @@ public class HearingDayDetailsEntity extends BaseEntity implements Serializable 
     private static final long serialVersionUID = -7404453999051585377L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, 
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
         generator = "hearing_day_details_id_seq_generator")
-    @SequenceGenerator(name = "hearing_day_details_id_seq_generator", 
+    @SequenceGenerator(name = "hearing_day_details_id_seq_generator",
         sequenceName = "hearing_day_details_id_seq", allocationSize = 1)
     @Column(name = "hearing_day_id")
     private Long hearingDayId;
@@ -60,12 +59,12 @@ public class HearingDayDetailsEntity extends BaseEntity implements Serializable 
     @JoinColumn(name = "hearing_response_id")
     private HearingResponseEntity hearingResponse;
 
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "hearingDayDetails", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingDayPanelEntity> hearingDayPanel;
 
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "hearingDayDetails", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingAttendeeDetailsEntity> hearingAttendeeDetails;
 
     public List<HearingDayPanelEntity> getHearingDayPanel() {

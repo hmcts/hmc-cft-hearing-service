@@ -89,6 +89,56 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
 
     @Test
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void testGetHearingDetailsForCases_ReturnsOnlyRequestedCasesAndLatestVersionPerHearing() {
+        List<CaseHearingRequestEntity> entities = caseHearingRequestRepository
+            .getHearingDetailsForCases(List.of("9372710950276233", "9372710950276239"));
+
+        assertThat(entities)
+            .extracting(CaseHearingRequestEntity::getCaseReference)
+            .containsOnly("9372710950276233", "9372710950276239");
+        assertThat(entities)
+            .extracting(entity -> entity.getHearing().getId())
+            .doesNotContain(2000000014L, 2000000015L);
+        assertThat(entities)
+            .filteredOn(entity -> entity.getHearing().getId().equals(2000000009L))
+            .extracting(CaseHearingRequestEntity::getVersionNumber)
+            .containsExactly(30);
+        assertThat(entities)
+            .filteredOn(entity -> entity.getHearing().getId().equals(2000000010L))
+            .extracting(CaseHearingRequestEntity::getVersionNumber)
+            .containsExactly(20);
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
+    void testGetHearingDetailsForCasesWithStatus_FiltersStatusAndReturnsLatestVersionPerHearing() {
+        List<CaseHearingRequestEntity> entities = caseHearingRequestRepository
+            .getHearingDetailsForCasesWithStatus(
+                List.of("9372710950276233", "9372710950276239"),
+                "HEARING_REQUESTED"
+            );
+
+        assertThat(entities)
+            .extracting(CaseHearingRequestEntity::getCaseReference)
+            .containsOnly("9372710950276233", "9372710950276239");
+        assertThat(entities)
+            .extracting(entity -> entity.getHearing().getStatus())
+            .containsOnly("HEARING_REQUESTED");
+        assertThat(entities)
+            .filteredOn(entity -> entity.getHearing().getId().equals(2000000009L))
+            .extracting(CaseHearingRequestEntity::getVersionNumber)
+            .containsExactly(30);
+        assertThat(entities)
+            .filteredOn(entity -> entity.getHearing().getId().equals(2000000013L))
+            .extracting(CaseHearingRequestEntity::getVersionNumber)
+            .containsExactly(10);
+        assertThat(entities)
+            .extracting(entity -> entity.getHearing().getId())
+            .doesNotContain(2000000010L, 2000000014L, 2000000015L);
+    }
+
+    @Test
+    @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void testGetHearingDetails_ValidCaseRefAndStatus() {
         List<CaseHearingRequestEntity> entities = caseHearingRequestRepository
             .getHearingDetailsWithStatus("9372710950276233", "HEARING_REQUESTED");

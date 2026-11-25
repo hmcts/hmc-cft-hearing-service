@@ -17,8 +17,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.BatchSize;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.hmc.exceptions.BadRequestException;
 
@@ -42,9 +41,9 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
     private static final long serialVersionUID = -3590902739857407292L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, 
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
         generator = "case_hearing_id_seq_generator")
-    @SequenceGenerator(name = "case_hearing_id_seq_generator", 
+    @SequenceGenerator(name = "case_hearing_id_seq_generator",
         sequenceName = "case_hearing_id_seq", allocationSize = 1)
     @Column(name = "case_hearing_id")
     private Long caseHearingID;
@@ -167,12 +166,11 @@ public class CaseHearingRequestEntity extends BaseEntity implements Cloneable, S
     @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<CancellationReasonsEntity> cancellationReasons;
 
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    @LazyCollection(LazyCollectionOption.FALSE)
     private List<HearingChannelsEntity> hearingChannels;
 
     @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    @LazyCollection(LazyCollectionOption.FALSE)
     private List<ChangeReasonsEntity> amendReasonCodes;
 
     public CaseHearingRequestEntity(CaseHearingRequestEntity original) {

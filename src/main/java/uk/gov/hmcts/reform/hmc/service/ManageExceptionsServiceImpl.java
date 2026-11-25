@@ -75,6 +75,7 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
     }
 
     @Override
+    @Transactional
     public ManageExceptionResponse manageExceptions(ManageExceptionRequest manageExceptionRequest,
                                                     String clientS2SToken) {
         String serviceName = securityUtils.getServiceNameFromS2SToken(clientS2SToken);
@@ -97,7 +98,6 @@ public class ManageExceptionsServiceImpl implements ManageExceptionsService {
         return response;
     }
 
-    @Transactional
     private SupportRequestResponse processSingle(HearingEntity entity,
                                                  SupportRequest request,
                                                  String serviceName) {

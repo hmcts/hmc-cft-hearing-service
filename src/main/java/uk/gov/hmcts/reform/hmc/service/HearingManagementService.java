@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
 
 import java.util.List;
+import java.util.Map;
 
 public interface HearingManagementService {
 
@@ -23,6 +24,8 @@ public interface HearingManagementService {
                                          String clientS2SToken);
 
     GetHearingsResponse getHearings(String caseRefId, String caseStatus);
+
+    Map<String, GetHearingsResponse> getHearingsForCases(Map<String, String> statusByCaseReference);
 
     GetHearingsResponse getEmptyHearingsResponse(String caseRefId);
 
