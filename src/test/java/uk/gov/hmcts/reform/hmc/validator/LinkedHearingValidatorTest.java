@@ -212,7 +212,7 @@ class LinkedHearingValidatorTest {
         HearingEntity hearing9 = generateHearing(2000000009L, PutHearingStatus.LISTED.name(), groupDetails, 2L);
         existingInDataList.add(hearing9);
 
-        when(hearingRepository.findByRequestId(requestId)).thenReturn(existingInDataList);
+        when(hearingRepository.findByRequestIdWithHearingResponses(requestId)).thenReturn(existingInDataList);
 
         Exception exception = assertThrows(LinkedHearingNotValidForUnlinkingException.class, () ->
                 linkedHearingValidator.validateLinkedHearingsForUpdate(requestId, payloadList));
@@ -249,7 +249,7 @@ class LinkedHearingValidatorTest {
                 "2000000008",
                 2));
 
-        when(hearingRepository.findByRequestId(requestId)).thenReturn(existingInDataList);
+        when(hearingRepository.findByRequestIdWithHearingResponses(requestId)).thenReturn(existingInDataList);
 
         Exception exception = assertThrows(BadRequestException.class, () ->
                 linkedHearingValidator.validateLinkedHearingsForUpdate(requestId, payloadList));
@@ -282,7 +282,7 @@ class LinkedHearingValidatorTest {
                 existingInDataList.getFirst().getLinkedOrder().intValue()));
         existingInDataList.add(hearing9);
 
-        when(hearingRepository.findByRequestId(requestId)).thenReturn(existingInDataList);
+        when(hearingRepository.findByRequestIdWithHearingResponses(requestId)).thenReturn(existingInDataList);
 
         linkedHearingValidator.validateLinkedHearingsForUpdate(requestId, payloadList);
     }
@@ -431,7 +431,7 @@ class LinkedHearingValidatorTest {
             );
 
             when(hearingRepository.existsById(any())).thenReturn(true);
-            when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any())).thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () ->
                 linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
@@ -459,6 +459,8 @@ class LinkedHearingValidatorTest {
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             GroupDetails groupDetails = generateGroupDetails("comment", "name",
                                                              LinkType.ORDERED.label, "reason"
@@ -505,7 +507,8 @@ class LinkedHearingValidatorTest {
             );
 
             when(hearingRepository.existsById(any())).thenReturn(true);
-            when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () ->
                 linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
@@ -558,7 +561,8 @@ class LinkedHearingValidatorTest {
                     .setStartDateTime(LocalDateTime.now().minusDays(2));
 
             when(hearingRepository.existsById(any())).thenReturn(true);
-            when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () ->
                 linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
@@ -593,6 +597,8 @@ class LinkedHearingValidatorTest {
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () ->
                 linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
@@ -628,6 +634,8 @@ class LinkedHearingValidatorTest {
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () ->
                 linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
@@ -662,6 +670,8 @@ class LinkedHearingValidatorTest {
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             Exception exception = assertThrows(BadRequestException.class, () ->
                 linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
@@ -688,6 +698,8 @@ class LinkedHearingValidatorTest {
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             LinkHearingDetails hearingDetails1 = generateHearingDetails("2000000000", 1);
             LinkHearingDetails hearingDetails2 = generateHearingDetails("2000000002", 1);
@@ -700,8 +712,8 @@ class LinkedHearingValidatorTest {
             );
 
             linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-            verify(hearingRepository, times(2)).findById(2000000000L);
-            verify(hearingRepository, times(2)).findById(2000000002L);
+            verify(hearingRepository).findById(2000000000L);
+            verify(hearingRepository).findById(2000000002L);
         }
 
         @Test
@@ -723,6 +735,8 @@ class LinkedHearingValidatorTest {
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
                 groupDetails,
@@ -734,8 +748,8 @@ class LinkedHearingValidatorTest {
 
             logger.info("hearingLinkGroupRequest : {}", hearingLinkGroupRequest);
             linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-            verify(hearingRepository, times(2)).findById(2000000000L);
-            verify(hearingRepository, times(2)).findById(2000000002L);
+            verify(hearingRepository).findById(2000000000L);
+            verify(hearingRepository).findById(2000000002L);
         }
 
         @Test
@@ -755,6 +769,8 @@ class LinkedHearingValidatorTest {
 
             when(hearingRepository.existsById(any())).thenReturn(true);
             when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+            when(hearingRepository.findByIdWithHearingResponses(any()))
+                .thenReturn(Optional.of(hearingEntity));
 
             HearingLinkGroupRequest hearingLinkGroupRequest = generateHearingLink(
                 groupDetails,
@@ -766,8 +782,8 @@ class LinkedHearingValidatorTest {
 
             logger.info("hearingLinkGroupRequest : {}", hearingLinkGroupRequest);
             linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-            verify(hearingRepository, times(2)).findById(2000000000L);
-            verify(hearingRepository, times(2)).findById(2000000002L);
+            verify(hearingRepository).findById(2000000000L);
+            verify(hearingRepository).findById(2000000002L);
         }
 
     }
@@ -799,6 +815,7 @@ class LinkedHearingValidatorTest {
 
         when(hearingRepository.existsById(any())).thenReturn(true);
         when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+        when(hearingRepository.findByIdWithHearingResponses(any())).thenReturn(Optional.of(hearingEntity));
 
         Exception exception = assertThrows(BadRequestException.class, () ->
             linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
@@ -828,6 +845,7 @@ class LinkedHearingValidatorTest {
 
         when(hearingRepository.existsById(any())).thenReturn(true);
         when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+        when(hearingRepository.findByIdWithHearingResponses(any())).thenReturn(Optional.of(hearingEntity));
 
         LinkHearingDetails hearingDetails1 = generateHearingDetails(hearingId1.toString(), 1);
         LinkHearingDetails hearingDetails2 = generateHearingDetails(hearingId2.toString(), 1);
@@ -840,8 +858,8 @@ class LinkedHearingValidatorTest {
         );
 
         linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null);
-        verify(hearingRepository, times(2)).findById(hearingId1);
-        verify(hearingRepository, times(2)).findById(hearingId2);
+        verify(hearingRepository).findById(hearingId1);
+        verify(hearingRepository).findById(hearingId2);
     }
 
     @Test
@@ -894,7 +912,8 @@ class LinkedHearingValidatorTest {
         );
 
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-        when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+        when(hearingRepository.findByIdWithHearingResponses(2000000000L))
+            .thenReturn(Optional.of(hearingEntity));
 
         Exception exception = assertThrows(BadRequestException.class, () ->
             linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
@@ -928,7 +947,8 @@ class LinkedHearingValidatorTest {
         );
 
         when(hearingRepository.existsById(2000000000L)).thenReturn(true);
-        when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+        when(hearingRepository.findByIdWithHearingResponses(2000000000L))
+            .thenReturn(Optional.of(hearingEntity));
 
         Exception exception = assertThrows(BadRequestException.class, () ->
             linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
@@ -964,6 +984,8 @@ class LinkedHearingValidatorTest {
 
         when(hearingRepository.existsById(any())).thenReturn(true);
         when(hearingRepository.findById(2000000000L)).thenReturn(Optional.of(hearingEntity));
+        when(hearingRepository.findByIdWithHearingResponses(2000000000L))
+            .thenReturn(Optional.of(hearingEntity));
 
         Exception exception = assertThrows(BadRequestException.class, () ->
             linkedHearingValidator.validateHearingLinkGroupRequest(hearingLinkGroupRequest, null)
@@ -1119,6 +1141,7 @@ class LinkedHearingValidatorTest {
 
         when(hearingRepository.existsById(any())).thenReturn(true);
         when(hearingRepository.findById(any())).thenReturn(Optional.of(hearingEntity));
+        when(hearingRepository.findByIdWithHearingResponses(any())).thenReturn(Optional.of(hearingEntity));
 
         GroupDetails groupDetails = generateGroupDetails("comment", "name",
                 LinkType.ORDERED.label, "reason"
