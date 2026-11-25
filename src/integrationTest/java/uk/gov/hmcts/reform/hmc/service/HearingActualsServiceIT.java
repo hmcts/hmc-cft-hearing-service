@@ -193,7 +193,7 @@ class HearingActualsServiceIT extends BaseTest {
             String json = TestFixtures.fromFileAsString("hearing-actuals-payload/HMAN80-ValidPayload1.json");
             HearingActual request = objectMapper.readValue(json, HearingActual.class);
             hearingActualsService.updateHearingActuals(hearingId, CLIENT_S2S_TOKEN, request);
-            Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
+            Optional<HearingEntity> hearingEntityOptional = hearingRepository.findByIdWithHearingResponses(hearingId);
             assertTrue(hearingEntityOptional.isPresent());
             HearingEntity hearingEntity = hearingEntityOptional.get();
             assertEquals(LISTED.name(), hearingEntity.getStatus());
@@ -213,7 +213,7 @@ class HearingActualsServiceIT extends BaseTest {
             HearingActual request = objectMapper.readValue(json, HearingActual.class);
             request.getHearingOutcome().setHearingResult(postHearingEventStatus);
             hearingActualsService.updateHearingActuals(hearingId, CLIENT_S2S_TOKEN, request);
-            Optional<HearingEntity> hearingEntityOptional = hearingRepository.findById(hearingId);
+            Optional<HearingEntity> hearingEntityOptional = hearingRepository.findByIdWithHearingResponses(hearingId);
             assertTrue(hearingEntityOptional.isPresent());
             HearingEntity hearingEntity = hearingEntityOptional.get();
             assertEquals(postHearingEventStatus, hearingEntity.getStatus());
