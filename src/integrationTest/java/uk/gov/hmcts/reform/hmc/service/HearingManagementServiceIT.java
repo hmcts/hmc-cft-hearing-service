@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.hmc.model.HearingDetails;
 import uk.gov.hmcts.reform.hmc.model.HearingRequest;
 import uk.gov.hmcts.reform.hmc.model.HearingResponse;
 import uk.gov.hmcts.reform.hmc.model.UpdateHearingRequest;
+import uk.gov.hmcts.reform.hmc.repository.CaseHearingRequestRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingRepository;
 import uk.gov.hmcts.reform.hmc.repository.HearingStatusAuditRepository;
 import uk.gov.hmcts.reform.hmc.utils.TestingUtil;
@@ -72,14 +73,18 @@ class HearingManagementServiceIT extends BaseTest {
 
     private final HearingRepository hearingRepository;
 
+    private final CaseHearingRequestRepository caseHearingRequestRepository;
+
     private final HearingStatusAuditRepository hearingStatusAuditRepository;
 
     @Autowired
     public HearingManagementServiceIT(HearingManagementService hearingManagementService,
                                       HearingRepository hearingRepository,
+                                      CaseHearingRequestRepository caseHearingRequestRepository,
                                       HearingStatusAuditRepository hearingStatusAuditRepository) {
         this.hearingManagementService = hearingManagementService;
         this.hearingRepository = hearingRepository;
+        this.caseHearingRequestRepository = caseHearingRequestRepository;
         this.hearingStatusAuditRepository = hearingStatusAuditRepository;
     }
 
@@ -237,7 +242,8 @@ class HearingManagementServiceIT extends BaseTest {
         Optional<HearingEntity> optionalHearingEntity = hearingRepository.findById(response.getHearingRequestId());
         assertTrue(optionalHearingEntity.isPresent(), "Hearing should be present");
         HearingEntity hearingEntity = optionalHearingEntity.get();
-        CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository
+            .getLatestCaseHearingRequest(hearingEntity.getId());
         List<ChangeReasonsEntity> amendReasons = caseHearingRequestEntity.getAmendReasonCodes();
         assertNotNull(amendReasons, "Case Hearing Request amend reasons should not be null");
         assertEquals(2, amendReasons.size(), "Case Hearing Request has unexpected number of amend reasons");
@@ -269,7 +275,8 @@ class HearingManagementServiceIT extends BaseTest {
         Optional<HearingEntity> optionalHearingEntity = hearingRepository.findById(response.getHearingRequestId());
         assertTrue(optionalHearingEntity.isPresent(), "Hearing should be present");
         HearingEntity hearingEntity = optionalHearingEntity.get();
-        CaseHearingRequestEntity caseHearingRequestEntity = hearingEntity.getLatestCaseHearingRequest();
+        CaseHearingRequestEntity caseHearingRequestEntity = caseHearingRequestRepository
+            .getLatestCaseHearingRequest(hearingEntity.getId());
         List<ChangeReasonsEntity> amendReasons = caseHearingRequestEntity.getAmendReasonCodes();
         assertNotNull(amendReasons, "Case Hearing Request amend reasons should not be null");
         assertEquals(0, amendReasons.size(), "Case Hearing Request has unexpected number of amend reasons");

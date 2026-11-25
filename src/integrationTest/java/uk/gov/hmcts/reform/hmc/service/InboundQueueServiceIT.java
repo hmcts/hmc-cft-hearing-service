@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.client.hmi.ErrorDetails;
 import uk.gov.hmcts.reform.hmc.client.hmi.SyncResponse;
@@ -143,6 +144,7 @@ class InboundQueueServiceIT extends BaseTest {
     }
 
     @Test
+    @Transactional
     @Sql(scripts = {SCRIPT_DELETE_HEARING_TABLES, SCRIPT_INSERT_HEARING_INBOUND_QUEUE})
     void processMessage_MessageTypeHearingResponse() throws JsonProcessingException {
         Map<String, Object> appProperties = createApplicationProperties(MessageType.HEARING_RESPONSE);
@@ -230,6 +232,7 @@ class InboundQueueServiceIT extends BaseTest {
     }
 
     @Test
+    @Transactional
     @Sql(scripts = {SCRIPT_DELETE_HEARING_TABLES, SCRIPT_INSERT_HEARING_INBOUND_QUEUE})
     void processMessage_MessageTypeHearingResponse_ValidationError() throws JsonProcessingException {
         Map<String, Object> appProperties = createApplicationProperties(MessageType.HEARING_RESPONSE);

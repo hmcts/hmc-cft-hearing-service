@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 import uk.gov.hmcts.reform.hmc.data.CaseHearingRequestEntity;
 import uk.gov.hmcts.reform.hmc.data.ChangeReasonsEntity;
@@ -63,6 +64,7 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
     }
 
     @Test
+    @Transactional
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void testGetHearingDetails_ValidCaseRef() {
         List<CaseHearingRequestEntity> entities = caseHearingRequestRepository
@@ -138,6 +140,7 @@ class CaseHearingRequestRepositoryIT extends BaseTest {
     }
 
     @Test
+    @Transactional
     @Sql(scripts = {DELETE_HEARING_DATA_SCRIPT, GET_HEARINGS_DATA_SCRIPT})
     void testGetHearingDetails_ValidCaseRefAndStatus() {
         List<CaseHearingRequestEntity> entities = caseHearingRequestRepository
