@@ -1,32 +1,42 @@
 package uk.gov.hmcts.reform.hmc.config;
 
+import com.azure.messaging.servicebus.ServiceBusMessage;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.hmcts.reform.hmc.ApplicationParams;
 import uk.gov.hmcts.reform.hmc.BaseTest;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.hmc.constants.Constants.AMEND_HEARING;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HEARING_ID;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.HMCTS_DEPLOYMENT_ID;
+import static uk.gov.hmcts.reform.hmc.constants.Constants.MESSAGE_TYPE;
 
 class MessageSenderToQueueConfigurationIT extends BaseTest {
 
     @Autowired
-    private ApplicationParams applicationParams;
+    private MessageSenderToQueueConfiguration messageSenderToQueueConfiguration;
 
     @Test
-    void shouldSuccessfullyProcessRequest() {
-        MessageSenderToQueueConfiguration messageSenderToQueueConfiguration =
-            new MessageSenderToQueueConfiguration(applicationParams);
-        messageSenderToQueueConfiguration.sendMessageToQueue("Test Message",1L,AMEND_HEARING,
-                                                             null);
+    void sendsTheHearingMessage() {
+        messageSenderToQueueConfiguration.sendMessageToQueue("Test Message", 1L, AMEND_HEARING, null);
+
+        var message = ArgumentCaptor.forClass(ServiceBusMessage.class);
+        verify(queueSenderClient).sendMessage(message.capture());
+        assertThat(message.getValue().getBody().toString()).isEqualTo("Test Message");
+        assertThat(message.getValue().getApplicationProperties())
+            .containsEntry(HEARING_ID, 1L)
+            .containsEntry(MESSAGE_TYPE, AMEND_HEARING)
+            .doesNotContainKey(HMCTS_DEPLOYMENT_ID);
     }
 
     @Test
-    void shouldSuccessfullyProcessRequestWhenDeploymentIdIsPresent() {
-        MessageSenderToQueueConfiguration messageSenderToQueueConfiguration =
-            new MessageSenderToQueueConfiguration(applicationParams);
-        ReflectionTestUtils.setField(applicationParams, "hmctsDeploymentIdEnabled", true);
-        messageSenderToQueueConfiguration.sendMessageToQueue("Test Message",1L,AMEND_HEARING,
-                                                             "TEST");
+    void sendsTheDeploymentIdWhenPresent() {
+        messageSenderToQueueConfiguration.sendMessageToQueue("Test Message", 1L, AMEND_HEARING, "TEST");
+
+        var message = ArgumentCaptor.forClass(ServiceBusMessage.class);
+        verify(queueSenderClient).sendMessage(message.capture());
+        assertThat(message.getValue().getApplicationProperties()).containsEntry(HMCTS_DEPLOYMENT_ID, "TEST");
     }
 }

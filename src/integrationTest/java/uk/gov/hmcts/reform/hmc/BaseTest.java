@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmc;
 
+import com.azure.messaging.servicebus.ServiceBusSenderClient;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import io.jsonwebtoken.Jwts;
@@ -22,7 +23,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.hmc.config.DataStoreUrlManager;
-import uk.gov.hmcts.reform.hmc.config.MessageSenderToTopicConfiguration;
 import uk.gov.hmcts.reform.hmc.config.RoleAssignmentUrlManager;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentAttributesResource;
 import uk.gov.hmcts.reform.hmc.data.RoleAssignmentResource;
@@ -68,13 +68,16 @@ public class BaseTest {
     protected SecurityUtils securityUtils;
     @Inject
     protected ApplicationParams applicationParams;
-    @MockitoBean
-    protected MessageSenderToTopicConfiguration messageSenderToTopicConfiguration;
+    @MockitoBean(name = "topicSenderClient")
+    protected ServiceBusSenderClient topicSenderClient;
 
     @Inject
     protected RoleAssignmentUrlManager roleAssignmentUrlManager;
     @Inject
     protected DataStoreUrlManager dataStoreUrlManager;
+
+    @MockitoBean(name = "queueSenderClient")
+    protected ServiceBusSenderClient queueSenderClient;
 
     @Value("${wiremock.server.port}")
     protected Integer wiremockPort;
